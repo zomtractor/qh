@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="todo" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入todo"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="企业名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -104,8 +96,12 @@
     <el-table v-loading="loading" :data="etpList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="todo" align="center" prop="userId" />
-      <el-table-column label="todo" align="center" prop="logoFileId" />
+      <el-table-column label="用户名" align="center" prop="userName" />
+      <el-table-column label="商标id" align="center" prop="logoFileId">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.logoFileId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="企业名称" align="center" prop="name" />
       <el-table-column label="宣传信息" align="center" prop="description" />
       <el-table-column label="法人" align="center" prop="legalPerson" />
@@ -155,11 +151,8 @@
     <!-- 添加或修改企业管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="todo" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入todo" />
-        </el-form-item>
-        <el-form-item label="todo" prop="logoFileId">
-          <el-input v-model="form.logoFileId" placeholder="请输入todo" />
+        <el-form-item label="logo" prop="logoFileId">
+          <image-upload v-model="form.logoFileId" :file-type="['png', 'jpg', 'jpeg']" limit="1"/>
         </el-form-item>
         <el-form-item label="企业名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入企业名称" />

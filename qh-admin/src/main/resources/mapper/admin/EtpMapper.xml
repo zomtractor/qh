@@ -21,13 +21,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="status"    column="status"    />
         <result property="version"    column="version"    />
     </resultMap>
+    <resultMap type="EtpDto" id="EtpResultDto">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="logoFileId"    column="logo_file_id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="legalPerson"    column="legal_person"    />
+        <result property="address"    column="address"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="website"    column="website"    />
+        <result property="popularity"    column="popularity"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
 
     <sql id="selectEtpVo">
         select id, user_id, logo_file_id, name, description, legal_person, address, phone, email, website, popularity, create_time, update_time, status, version from tb_etp
     </sql>
+    <sql id="selectEtpDto">
+        select e.id, user_id, logo_file_id, name, description, legal_person, address, phone, email, website, popularity, e.create_time, e.update_time, e.status, e.version,
+        u.username as user_name
+        from tb_etp e left join tb_user u on e.user_id=u.id
+    </sql>
 
-    <select id="selectEtpList" parameterType="Etp" resultMap="EtpResult">
-        <include refid="selectEtpVo"/>
+    <select id="selectEtpList" parameterType="Etp" resultMap="EtpResultDto">
+        <include refid="selectEtpDto"/>
         <where>  
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
@@ -38,9 +61,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectEtpById" parameterType="Long" resultMap="EtpResult">
-        <include refid="selectEtpVo"/>
-        where id = #{id}
+    <select id="selectEtpById" parameterType="Long" resultMap="EtpResultDto">
+        <include refid="selectEtpDto"/>
+        where e.id = #{id}
     </select>
 
     <insert id="insertEtp" parameterType="Etp" useGeneratedKeys="true" keyProperty="id">

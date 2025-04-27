@@ -98,7 +98,11 @@
       <el-table-column label="id" align="center" prop="id" />
 <!--      <el-table-column label="用户id" align="center" prop="userId" />-->
       <el-table-column label="用户名" align="center" prop="userName" />
-      <el-table-column label="头像文件ID" align="center" prop="avatarFileId" />
+      <el-table-column label="头像" align="center" prop="avatarFileId" >
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.avatarFileId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="姓名" align="center" prop="name" />
       <el-table-column label="性别" align="center" prop="gender" />
       <el-table-column label="年龄" align="center" prop="age" />
@@ -107,7 +111,11 @@
       <el-table-column label="联系电话" align="center" prop="phone" />
       <el-table-column label="电子邮件" align="center" prop="email" />
       <el-table-column label="意向" align="center" prop="jobIntention" />
-      <el-table-column label="简历附件" align="center" prop="attachmentFileIds" />
+      <el-table-column label="简历附件" align="center" prop="attachmentFileIds" >
+        <template slot-scope="scope">
+          <span>{{ scope.row.attachmentFileIds ? scope.row.attachmentFileIds.split(',').filter(item => item.trim() !== '').length : 0 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -150,7 +158,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="头像文件ID" prop="avatarFileId">
-          <el-input v-model="form.avatarFileId" placeholder="请输入头像文件ID" />
+          <image-upload v-model="form.avatarFileId" :file-type="['png', 'jpg', 'jpeg']" limit="1"/>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入名称" />
@@ -174,7 +182,7 @@
           <el-input v-model="form.jobIntention" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="简历附件" prop="attachmentFileIds">
-          <el-input v-model="form.attachmentFileIds" type="textarea" placeholder="请输入内容" />
+          <file-upload v-model="form.attachmentFileIds" :file-type='["doc", "docx", "xls", "xlsx", "txt", "pdf", "png","jpg","jpeg"]'/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
