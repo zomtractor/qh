@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qh.recruit.admin.mapper.ResumeMapper">
+    <resultMap type="Resume" id="ResumeResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="avatarFileId"    column="avatar_file_id"    />
+        <result property="name"    column="name"    />
+        <result property="gender"    column="gender"    />
+        <result property="age"    column="age"    />
+        <result property="education"    column="education"    />
+        <result property="school"    column="school"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="jobIntention"    column="job_intention"    />
+        <result property="attachmentFileIds"    column="attachment_file_ids"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+    <resultMap type="ResumeDto" id="ResumeResultDto">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="avatarFileId"    column="avatar_file_id"    />
+        <result property="name"    column="name"    />
+        <result property="gender"    column="gender"    />
+        <result property="age"    column="age"    />
+        <result property="education"    column="education"    />
+        <result property="school"    column="school"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="jobIntention"    column="job_intention"    />
+        <result property="attachmentFileIds"    column="attachment_file_ids"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectResumeVo">
+        select id, user_id, avatar_file_id, name, gender, age, education, school, phone, email, job_intention, attachment_file_ids, create_time, update_time, status, version from tb_resume
+    </sql>
+    <sql id="selectResumeDto">
+        select r.id, user_id, avatar_file_id, name, gender, age, education, school, phone, email, job_intention, attachment_file_ids,
+               r.create_time, r.update_time, r.status, r.version,
+               u.username as user_name
+        from tb_resume r left join tb_user u on r.id=u.id
+    </sql>
+
+    <select id="selectResumeList" parameterType="Resume" resultMap="ResumeResultDto">
+        <include refid="selectResumeDto"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="education != null  and education != ''"> and education = #{education}</if>
+            <if test="school != null  and school != ''"> and school = #{school}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+        </where>
+    </select>
+    
+    <select id="selectResumeById" parameterType="Long" resultMap="ResumeResultDto">
+        <include refid="selectResumeDto"/>
+        where r.id = #{id}
+    </select>
+
+    <insert id="insertResume" parameterType="Resume" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_resume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="avatarFileId != null">avatar_file_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="age != null">age,</if>
+            <if test="education != null">education,</if>
+            <if test="school != null">school,</if>
+            <if test="phone != null">phone,</if>
+            <if test="email != null">email,</if>
+            <if test="jobIntention != null">job_intention,</if>
+            <if test="attachmentFileIds != null">attachment_file_ids,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="version != null">version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="avatarFileId != null">#{avatarFileId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null and gender != ''">#{gender},</if>
+            <if test="age != null">#{age},</if>
+            <if test="education != null">#{education},</if>
+            <if test="school != null">#{school},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="jobIntention != null">#{jobIntention},</if>
+            <if test="attachmentFileIds != null">#{attachmentFileIds},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="version != null">#{version},</if>
+         </trim>
+    </insert>
+
+    <update id="updateResume" parameterType="Resume">
+        update tb_resume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="avatarFileId != null">avatar_file_id = #{avatarFileId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="education != null">education = #{education},</if>
+            <if test="school != null">school = #{school},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="jobIntention != null">job_intention = #{jobIntention},</if>
+            <if test="attachmentFileIds != null">attachment_file_ids = #{attachmentFileIds},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="version != null">version = #{version},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteResumeById" parameterType="Long">
+        delete from tb_resume where id = #{id}
+    </delete>
+
+    <delete id="deleteResumeByIds" parameterType="String">
+        delete from tb_resume where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qh.recruit.admin.mapper.InterviewMapper">
+    
+    <resultMap type="Interview" id="InterviewResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="etpId"    column="etp_id"    />
+        <result property="interviewStatus"    column="interview_status"    />
+        <result property="message"    column="message"    />
+        <result property="time"    column="time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectInterviewVo">
+        select id, user_id, job_id, etp_id, interview_status, message, time, create_time, update_time, status, version from tb_interview
+    </sql>
+
+    <select id="selectInterviewList" parameterType="Interview" resultMap="InterviewResult">
+        <include refid="selectInterviewVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="jobId != null "> and job_id = #{jobId}</if>
+            <if test="etpId != null "> and etp_id = #{etpId}</if>
+        </where>
+    </select>
+    
+    <select id="selectInterviewById" parameterType="Long" resultMap="InterviewResult">
+        <include refid="selectInterviewVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertInterview" parameterType="Interview" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_interview
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="jobId != null">job_id,</if>
+            <if test="etpId != null">etp_id,</if>
+            <if test="interviewStatus != null">interview_status,</if>
+            <if test="message != null">message,</if>
+            <if test="time != null">time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="version != null">version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="jobId != null">#{jobId},</if>
+            <if test="etpId != null">#{etpId},</if>
+            <if test="interviewStatus != null">#{interviewStatus},</if>
+            <if test="message != null">#{message},</if>
+            <if test="time != null">#{time},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="version != null">#{version},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInterview" parameterType="Interview">
+        update tb_interview
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="jobId != null">job_id = #{jobId},</if>
+            <if test="etpId != null">etp_id = #{etpId},</if>
+            <if test="interviewStatus != null">interview_status = #{interviewStatus},</if>
+            <if test="message != null">message = #{message},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="version != null">version = #{version},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteInterviewById" parameterType="Long">
+        delete from tb_interview where id = #{id}
+    </delete>
+
+    <delete id="deleteInterviewByIds" parameterType="String">
+        delete from tb_interview where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
