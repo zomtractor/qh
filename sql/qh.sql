@@ -123,3 +123,19 @@ CREATE TABLE tb_comment (
                             status TINYINT DEFAULT 1,
                             version INT DEFAULT 1
 );
+
+create table tb_communicate
+(
+    id          bigint AUTO_INCREMENT PRIMARY KEY,
+    poster_id   bigint    not null,
+    receiver_id bigint    not null,
+    previous_id bigint not null default -1,
+    content     text      null,
+    content_type   ENUM('text', 'image', 'file') default 'text',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status TINYINT DEFAULT 1,
+    version INT DEFAULT 1
+);
+
+
