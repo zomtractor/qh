@@ -2,7 +2,7 @@ package com.qh.recruit.admin.service.impl;
 
 import java.util.List;
 import com.qh.recruit.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.admin.mapper.CategoryMapper;
 import com.qh.recruit.admin.domain.Category;
@@ -17,7 +17,7 @@ import com.qh.recruit.admin.service.ICategoryService;
 @Service
 public class CategoryServiceImpl implements ICategoryService 
 {
-    @Autowired
+    @Resource
     private CategoryMapper categoryMapper;
 
     /**
@@ -54,7 +54,8 @@ public class CategoryServiceImpl implements ICategoryService
     public int insertCategory(Category category)
     {
         category.setCreateTime(DateUtils.getNowDate());
-        return categoryMapper.insertCategory(category);
+        int i = categoryMapper.insertCategory(category);
+        return i;
     }
 
     /**

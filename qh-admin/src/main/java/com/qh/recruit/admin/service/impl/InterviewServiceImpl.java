@@ -2,7 +2,7 @@ package com.qh.recruit.admin.service.impl;
 
 import java.util.List;
 import com.qh.recruit.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.admin.mapper.InterviewMapper;
 import com.qh.recruit.admin.domain.Interview;
@@ -17,7 +17,7 @@ import com.qh.recruit.admin.service.IInterviewService;
 @Service
 public class InterviewServiceImpl implements IInterviewService 
 {
-    @Autowired
+    @Resource
     private InterviewMapper interviewMapper;
 
     /**

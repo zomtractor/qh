@@ -2,7 +2,7 @@ package com.qh.recruit.admin.service.impl;
 
 import java.util.List;
 import com.qh.recruit.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.admin.mapper.ResumeMapper;
 import com.qh.recruit.admin.domain.Resume;
@@ -17,7 +17,7 @@ import com.qh.recruit.admin.service.IResumeService;
 @Service
 public class ResumeServiceImpl implements IResumeService 
 {
-    @Autowired
+    @Resource
     private ResumeMapper resumeMapper;
 
     /**

@@ -58,4 +58,6 @@ public interface TagMapper
      * @return 结果
      */
     public int deleteTagByIds(Long[] ids);
+
+    List<Tag> selectTagsByIds(String ids);
 }

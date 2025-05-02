@@ -2,7 +2,7 @@ package com.qh.recruit.admin.service.impl;
 
 import java.util.List;
 import com.qh.recruit.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.admin.mapper.CommentMapper;
 import com.qh.recruit.admin.domain.Comment;
@@ -17,7 +17,7 @@ import com.qh.recruit.admin.service.ICommentService;
 @Service
 public class CommentServiceImpl implements ICommentService 
 {
-    @Autowired
+    @Resource
     private CommentMapper commentMapper;
 
     /**

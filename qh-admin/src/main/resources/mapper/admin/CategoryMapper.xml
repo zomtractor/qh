@@ -28,6 +28,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectCategoryVo"/>
         where id = #{id}
     </select>
+    <select id="selectCategoryByIds" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        where false
+        <if test="ids != null and ids != ''">
+            or id in (${ids})
+        </if>
+    </select>
 
     <insert id="insertCategory" parameterType="Category" useGeneratedKeys="true" keyProperty="id">
         insert into tb_category

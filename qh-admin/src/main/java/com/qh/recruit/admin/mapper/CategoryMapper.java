@@ -58,4 +58,6 @@ public interface CategoryMapper
      * @return 结果
      */
     public int deleteCategoryByIds(Long[] ids);
+
+    List<Category> selectCategoryByIds(String categoryIds);
 }

@@ -1,13 +1,23 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="职位名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入名称"
+          placeholder="请输入职位名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="企业名称" prop="etpName">
+        <el-autocomplete
+          class="inline-input"
+          v-model="searchEtp"
+          :fetch-suggestions="etpSearch"
+          @select="handleEtpSelect"
+          placeholder="请输入内容"
+        ></el-autocomplete>
+
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -64,14 +74,26 @@
     <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="岗位名称" align="center" prop="name" />
       <el-table-column label="岗位职责" align="center" prop="description" />
       <el-table-column label="todo" align="center" prop="salaryDesc" />
       <el-table-column label="工作地点" align="center" prop="location" />
       <el-table-column label="要求条件" align="center" prop="requirement" />
-      <el-table-column label="todo" align="center" prop="etpId" />
-      <el-table-column label="todo" align="center" prop="categoryIds" />
-      <el-table-column label="标签ID" align="center" prop="tagIds" />
+      <el-table-column label="企业名称" align="center" prop="etpId" />
+      <el-table-column label="分类" align="center" prop="categoryIds" >
+        <template slot-scope="scope">
+          <el-tag v-for="tag in scope.row.categoryList" :key="tag" size="small" effect="dark" type="" style="margin: 2px">
+            {{ tag.name }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="标签" align="center" prop="tagIds">
+        <template slot-scope="scope">
+          <el-tag v-for="tag in scope.row.tagList" :key="tag" size="small" effect="dark" type="" style="margin-left: 2px">
+            {{ tag.name }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="岗位热度" align="center" prop="popularity" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -129,14 +151,45 @@
         <el-form-item label="要求条件" prop="requirement">
           <el-input v-model="form.requirement" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="${comment}" prop="etpId">
-          <el-input v-model="form.etpId" placeholder="请输入${comment}" />
+        <el-form-item label="分类" prop="categoryIds">
+          <el-autocomplete
+            class="inline-input"
+            v-model="searchCategory"
+            :fetch-suggestions="queryCategory"
+            placeholder="请输入内容"
+            @select="handleCategorySelect"
+            @change="handleCategoryEntered"
+          ></el-autocomplete>
+          <el-tag
+            v-for="tag in form.categoryList"
+            closable
+            :disable-transitions="true"
+            :key="tag"
+            type="info"
+            @close="closeCategory(tag)"
+          >
+            <span class="el-select__tags-text">{{ tag.name }}</span>
+          </el-tag>
         </el-form-item>
-        <el-form-item label="todo" prop="categoryIds">
-          <el-input v-model="form.categoryIds" placeholder="请输入todo" />
-        </el-form-item>
-        <el-form-item label="标签ID" prop="tagIds">
-          <el-input v-model="form.tagIds" placeholder="请输入标签ID" />
+        <el-form-item label="标签" prop="tagIds">
+          <el-autocomplete
+            class="inline-input"
+            v-model="searchTag"
+            :fetch-suggestions="queryTag"
+            placeholder="请输入内容"
+            @select="handleTagSelect"
+            @change="handleTagEntered"
+          ></el-autocomplete>
+          <el-tag
+            v-for="tag in form.tagList"
+            closable
+            :disable-transitions="true"
+            :key="tag"
+            type="info"
+            @close="closeTag(tag)"
+          >
+            <span class="el-select__tags-text">{{ tag.name }}</span>
+          </el-tag>
         </el-form-item>
         <el-form-item label="岗位热度" prop="popularity">
           <el-input v-model="form.popularity" placeholder="请输入岗位热度" />
@@ -152,7 +205,9 @@
 
 <script>
 import { listJob, getJob, delJob, addJob, updateJob } from "@/api/admin/job";
-
+import { listEtp} from "@/api/admin/etp";
+import {listTag,addTag} from "@/api/admin/tag";
+import {listCategory,addCategory} from "@/api/admin/category";
 export default {
   name: "Job",
   data() {
@@ -180,6 +235,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
+        etpId: null,
         description: null,
       },
       // 表单参数
@@ -192,7 +248,11 @@ export default {
         description: [
           { required: true, message: "岗位职责不能为空", trigger: "blur" }
         ],
-      }
+      },
+
+      searchEtp: null,
+      searchTag: null,
+      searchCategory: null,
     };
   },
   created() {
@@ -236,6 +296,9 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
+      if(!this.searchEtp) {
+        this.queryParams.etpId = null;
+      }
       this.getList();
     },
     /** 重置按钮操作 */
@@ -252,6 +315,8 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.tagList=[];
+      this.categoryList=[];
       this.open = true;
       this.title = "添加岗位";
     },
@@ -269,6 +334,8 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.categoryIds = this.form.categoryList.map(item => item.id).join(",");
+          this.form.tagIds = this.form.tagList.map(item => item.id).join(",");
           if (this.form.id != null) {
             updateJob(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -300,7 +367,110 @@ export default {
       this.download('admin/job/export', {
         ...this.queryParams
       }, `job_${new Date().getTime()}.xlsx`)
-    }
-  }
+    },
+
+    etpSearch(queryString, cb) {
+      listEtp({name: this.searchEtp}).then(response => {
+        // list response.rows and get etpNames
+        let data = response.rows.map(item => {
+          return {
+            value: item.id,
+            name: item.name
+          }
+        });
+        cb(data);
+      });
+
+    },
+    handleEtpSelect(item){
+      this.queryParams.etpId = item.value;
+      this.searchEtp = item.name;
+    },
+    handleClose(list,tag) {
+      list.splice(this.dynamicTags.indexOf(tag), 1);
+    },
+    handleInputTagsConfirm() {
+      let inputValue;
+      if (inputValue) {
+        this.form.tagList.push(inputValue);
+      }
+      this.inputVisible = false;
+    },
+    queryCategory(queryString, cb) {
+      listCategory({name:queryString}).then(response => {
+        // list response.rows and get etpNames
+        let data = response.rows.map(item => {
+          return {
+            value: item.name,
+            category: item
+          }
+        });
+        cb(data);
+      });
+    },
+    handleCategorySelect(item){
+      if (item.name && !this.form.categoryList.some(tag => tag.name === item.name)) {
+        this.form.categoryList.push(item.category);
+      }
+      this.searchCategory = ''
+
+    },
+    handleCategoryEntered(itemName){
+      if (itemName && !this.form.categoryList.some(tag => tag.name === itemName)) {
+        listCategory({name:itemName}).then(response => {
+          if (response.rows.length > 0) {
+            this.form.categoryList.push(response.rows[0]);
+          } else {
+            addCategory({name:itemName}).then(response => {
+              this.form.categoryList.push(response.data);
+            });
+          }
+        });
+      }
+      this.searchCategory = ''
+
+    },
+    closeCategory(tag) {
+      this.form.categoryList.splice(this.form.categoryList.indexOf(tag), 1);
+    },
+    queryTag(queryString, cb) {
+      listTag({name:queryString}).then(response => {
+        // list response.rows and get etpNames
+        let data = response.rows.map(item => {
+          return {
+            value: item.name,
+            tag: item
+          }
+        });
+        cb(data);
+      });
+    },
+    handleTagSelect(item){
+      if (item.name && !this.form.tagList.some(tag => tag.name === item.name)) {
+        this.form.tagList.push(item.tag);
+      }
+      this.searchTag = ''
+
+    },
+    handleTagEntered(itemName){
+      if (itemName && !this.form.tagList.some(tag => tag.name === itemName)) {
+        listTag({name:itemName}).then(response => {
+          if (response.rows.length > 0) {
+            this.form.tagList.push(response.rows[0]);
+          } else {
+            addTag({name:itemName}).then(response => {
+              this.form.tagList.push(response.data);
+            });
+          }
+        });
+      }
+      this.searchTag = ''
+
+    },
+    closeTag(tag) {
+      this.form.tagList.splice(this.form.tagList.indexOf(tag), 1);
+    },
+  },
+
 };
 </script>

@@ -29,6 +29,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectTagVo"/>
         where id = #{id}
     </select>
+    <select id="selectTagsByIds" resultMap="TagResult">
+        <include refid="selectTagVo"/>
+        where false
+        <if test="ids != null and ids != ''">
+            or id in (${ids})
+        </if>
+    </select>
 
     <insert id="insertTag" parameterType="Tag" useGeneratedKeys="true" keyProperty="id">
         insert into tb_tag

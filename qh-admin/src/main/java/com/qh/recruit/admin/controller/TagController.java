@@ -3,7 +3,7 @@ package com.qh.recruit.admin.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,7 +31,7 @@ import com.qh.recruit.common.core.page.TableDataInfo;
 @RequestMapping("/admin/tag")
 public class TagController extends BaseController
 {
-    @Autowired
+    @Resource
     private ITagService tagService;
 
     /**
@@ -77,7 +77,8 @@ public class TagController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Tag tag)
     {
-        return toAjax(tagService.insertTag(tag));
+        int rows = tagService.insertTag(tag);
+        return rows > 0 ? getInfo(tag.getId()) : AjaxResult.error();
     }
 
     /**

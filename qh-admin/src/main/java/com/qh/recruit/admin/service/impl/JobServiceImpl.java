@@ -1,8 +1,15 @@
 package com.qh.recruit.admin.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
+
+import com.qh.recruit.admin.domain.Category;
+import com.qh.recruit.admin.domain.Tag;
+import com.qh.recruit.admin.domain.dto.JobDto;
+import com.qh.recruit.admin.mapper.CategoryMapper;
+import com.qh.recruit.admin.mapper.TagMapper;
 import com.qh.recruit.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.admin.mapper.JobMapper;
 import com.qh.recruit.admin.domain.Job;
@@ -15,10 +22,16 @@ import com.qh.recruit.admin.service.IJobService;
  * @date 2025-04-26
  */
 @Service
-public class JobServiceImpl implements IJobService 
+public class JobServiceImpl implements IJobService
 {
-    @Autowired
+    @Resource
     private JobMapper jobMapper;
+    
+    @Resource
+    private TagMapper tagMapper;
+    
+    @Resource
+    private CategoryMapper categoryMapper;
 
     /**
      * 查询岗位
@@ -29,7 +42,16 @@ public class JobServiceImpl implements IJobService
     @Override
     public Job selectJobById(Long id)
     {
-        return jobMapper.selectJobById(id);
+        JobDto job = (JobDto) jobMapper.selectJobById(id);
+        loadTagsAndCategories(job);
+        return job;
+    }
+
+    private void loadTagsAndCategories(JobDto job) {
+        List<Tag> tagList= tagMapper.selectTagsByIds(job.getTagIds());
+        job.setTagList(tagList);
+        List<Category> categoryList = categoryMapper.selectCategoryByIds(job.getCategoryIds());
+        job.setCategoryList(categoryList);
     }
 
     /**
@@ -41,7 +63,11 @@ public class JobServiceImpl implements IJobService
     @Override
     public List<Job> selectJobList(Job job)
     {
-        return jobMapper.selectJobList(job);
+        List<Job> jobs = jobMapper.selectJobList(job);
+        for (Job jobItem : jobs) {
+            loadTagsAndCategories((JobDto) jobItem);
+        }
+        return jobs;
     }
 
     /**

@@ -154,6 +154,9 @@
         <el-form-item label="logo" prop="logoFileId">
           <image-upload v-model="form.logoFileId" :file-type="['png', 'jpg', 'jpeg']" limit="1"/>
         </el-form-item>
+        <el-form-item label="用户id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户id" />
+        </el-form-item>
         <el-form-item label="企业名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入企业名称" />
         </el-form-item>
