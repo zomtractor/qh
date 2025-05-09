@@ -20,16 +20,16 @@ public class Interview extends BaseEntity
     /** $column.columnComment */
     private Long id;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 求职者id */
+    @Excel(name = "求职者id")
     private Long userId;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 岗位id */
+    @Excel(name = "岗位id")
     private Long jobId;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 企业id */
+    @Excel(name = "企业id")
     private Long etpId;
 
     /** 面试状态 */
