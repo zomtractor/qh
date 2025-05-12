@@ -1,12 +1,12 @@
 <template>
   <div>
-    message
+    job
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Message',
+  name: 'Job',
   data() {
     return {
 

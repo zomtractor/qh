@@ -1,12 +1,12 @@
 <template>
   <div>
-    message
+    cmnc
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Message',
+  name: 'Communicate',
   data() {
     return {
 

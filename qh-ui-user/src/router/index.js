@@ -13,6 +13,10 @@ const routes = [
     path: '/jobSeeker',
     name: 'jobSeeker',
     component: () => import( '../views/jobseeker/index'),
+  },  {
+    path: '/enterprise',
+    name: 'enterprise',
+    component: () => import( '../views/enterprise/index'),
   },
 ]
 

@@ -1,12 +1,12 @@
 <template>
   <div>
-    message
+    interview
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Message',
+  name: 'Interview',
   data() {
     return {
 

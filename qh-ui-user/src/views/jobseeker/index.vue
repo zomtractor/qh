@@ -48,6 +48,7 @@ import Message from "./message.vue";
 import Resume from "./resume.vue";
 
 export default {
+  name: 'JobSeeker',
   data() {
     return {
       activeMenu: "Home",
