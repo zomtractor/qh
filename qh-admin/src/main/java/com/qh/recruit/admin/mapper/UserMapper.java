@@ -2,6 +2,7 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.User;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 用户管理Mapper接口
@@ -58,4 +59,9 @@ public interface UserMapper
      * @return 结果
      */
     public int deleteUserByIds(Long[] ids);
+
+    User selectJobSeekerByIdentifier(String identifier);
+
+    User selectEnterpriseByIdentifier(String identifier);
+
 }
