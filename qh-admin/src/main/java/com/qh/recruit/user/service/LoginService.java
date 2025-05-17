@@ -7,8 +7,10 @@ import com.qh.recruit.common.constant.Constants;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.domain.model.LoginUser;
 import com.qh.recruit.common.core.redis.RedisCache;
+import com.qh.recruit.common.exception.user.UserException;
 import com.qh.recruit.common.utils.SecurityUtils;
 import com.qh.recruit.common.utils.uuid.IdUtils;
+import com.qh.recruit.framework.web.service.SysLoginService;
 import com.qh.recruit.framework.web.service.TokenService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -34,32 +36,25 @@ public class LoginService {
     private RedisCache redisCache;
 
     @Resource
-    private TokenService tokenService;
+    private SysLoginService sysLoginService;
 
-    public AjaxResult login(String role, String username, String phone, String password, String code, String uuid) {
-        // 校验验证码
-        String verifyKey = "captcha_codes:" + uuid;
-        String cachedCode = redisCache.getCacheObject(verifyKey);
-        if (!StringUtils.hasText(cachedCode) || !cachedCode.equalsIgnoreCase(code)) {
-            return AjaxResult.error("验证码错误");
+    public AjaxResult login(String role, String username,  String password, String code, String uuid) {
+
+        try{
+            sysLoginService.validateCaptcha(username,code,uuid);
+            sysLoginService.loginPreCheck(username,password);
+        } catch (UserException e) {
+            return AjaxResult.error(e.getMessage());
         }
-
         // 查询用户
-        User user = null;
-        if ("job_seeker".equals(role)) {
-            user = StringUtils.hasText(username) ? userMapper.selectJobSeekerByIdentifier(username) : null;
-        } else if ("enterprise".equals(role)) {
-            user = StringUtils.hasText(phone) ? userMapper.selectEnterpriseByIdentifier(phone) : null;
-        }
-
+        User user = StringUtils.hasText(username) ? userMapper.selectJobSeekerByIdentifier(username) : null;
         if (user == null || !Objects.equals(user.getUserType(), role)) {
             return AjaxResult.error("用户不存在或身份不匹配");
         }
 
-        if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
+        if (!Objects.equals(password, user.getPassword())) {
             return AjaxResult.error("密码错误");
         }
-
         // 构造令牌并返回
         return AjaxResult.success("登录成功", createToken(user));
     }
@@ -69,10 +64,9 @@ public class LoginService {
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
         claims.put(Constants.JWT_USERNAME, user.getUsername());
-        String tokenf = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
-        return tokenf;
 
     }
 }

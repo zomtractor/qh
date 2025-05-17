@@ -81,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <!-- 查询求职者：从用户名或简历邮箱/手机号登录 -->
-    <select id="selectJobSeekerByIdentifier" resultType="User">
+    <select id="selectJobSeekerByIdentifier" resultMap="UserResult">
         SELECT u.*
         FROM tb_user u
                  LEFT JOIN tb_resume r ON u.id = r.user_id
@@ -96,7 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 查询招聘员：从用户名或企业邮箱/手机号登录 -->
-    <select id="selectEnterpriseByIdentifier" resultType="User">
+    <select id="selectEnterpriseByIdentifier" resultMap="UserResult">
         SELECT u.*
         FROM tb_user u
                  LEFT JOIN tb_etp e ON u.id = e.user_id

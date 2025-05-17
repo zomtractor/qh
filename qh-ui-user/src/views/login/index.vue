@@ -30,7 +30,7 @@
               <el-input v-model="loginForm.code" placeholder="请输入验证码" />
             </el-col>
             <el-col :span="10">
-              <VerifyCodeImg @click="getCode" :src="codeUrl" />
+              <img :src="codeUrl" @click="getCode" class="login-code-img"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { login } from '@/api/login'
+import {getCodeImg, login} from '@/api/login'
 import { setToken } from '@/utils/auth'
 
 export default {
@@ -53,12 +53,13 @@ export default {
     return {
       activeRole: 'job_seeker',
       emailLogin: false,
+      captchaEnabled: false,
       loginForm: {
         username: '',
-        phone: '',
         password: '',
         code: '',
-        uuid: ''
+        uuid: '',
+        role: 'job_seeker'
       },
       codeUrl: '',
       rules: {
@@ -85,19 +86,32 @@ export default {
       this.getCode()
     },
     getCode() {
-      this.codeUrl = `/captchaImage?uuid=${(this.loginForm.uuid = this.$uuid())}`
+      getCodeImg().then(res => {
+        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+        if (this.captchaEnabled) {
+          this.codeUrl = "data:image/gif;base64," + res.img;
+          this.loginForm.uuid = res.uuid;
+        }
+      });
     },
     handleLogin() {
       this.$refs.loginFormRef.validate(valid => {
-        if (!valid) return
-        const loginData = {
-          role: this.activeRole,
-          ...this.loginForm
+        if (valid) {
+          this.loading = true;
+          this.loginForm.role = this.activeRole;
+          login(this.loginForm).then(resp => {
+            console.log(resp)
+            if(resp.code===200){
+              setToken(resp.data)
+              this.$router.push(this.activeRole === 'job_seeker' ? '/jobSeeker' : '/enterprise')
+            }
+          }).catch(() => {
+            this.loading = false;
+            if (this.captchaEnabled) {
+              this.getCode();
+            }
+          });
         }
-        login(loginData).then(res => {
-          setToken(res.token)
-          this.$router.push(this.activeRole === 'job_seeker' ? '/home' : '/enterprise')
-        })
       })
     }
   }
@@ -126,5 +140,17 @@ export default {
 .login-mode-switch {
   color: #409EFF;
   cursor: pointer;
+}
+.login-code {
+  width: 33%;
+  height: 38px;
+  float: right;
+  img {
+    cursor: pointer;
+    vertical-align: middle;
+  }
+}
+.login-code-img {
+  height: 38px;
 }
 </style>
