@@ -88,6 +88,22 @@ spring:
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
 
+  mail:
+    host: smtp.qq.com
+    username: 908288050@qq.com #
+    password: wlzjwmacrnejbedc # 邮箱授权码
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+  thymeleaf:
+    cache: false #为了方便调试，在开发时需要关闭缓存
+    mode: LEGACYHTML5 #表示 Thymeleaf 模式
+    encoding: UTF-8 #编码格式
+    servlet:
+      content-type: text/html #文档类型
 # token配置
 token:
   # 令牌自定义标识

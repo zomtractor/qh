@@ -8,15 +8,9 @@
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef">
         <div class="form-header">
             <span class="login-mode-switch" @click="switchLoginMode">
-              <a href="email">邮箱登录</a>
+              <a href=".">用户登录</a>
             </span>
         </div>
-        <el-form-item prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名/手机号/邮箱"/>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"/>
-        </el-form-item>
 
         <el-form-item prop="code">
           <el-row :gutter="20">
@@ -28,9 +22,16 @@
             </el-col>
           </el-row>
         </el-form-item>
-
+·
         <el-form-item>
-          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-row :gutter="20">
+            <el-col :span="16">
+              <el-input prop="emailCode" v-model="loginForm.email" placeholder="请输入邮箱"/>
+            </el-col>
+            <el-col :span="8">
+              <el-button @click="sendEmailCode" >发送</el-button>
+            </el-col>
+          </el-row>
         </el-form-item>
       </el-form>
     </div>
@@ -38,8 +39,7 @@
 </template>
 
 <script>
-import {getCodeImg, login} from '@/api/login'
-import {setToken} from '@/utils/auth'
+import {getCodeImg, sendEmail} from '@/api/login'
 
 export default {
   name: 'Login',
@@ -49,17 +49,15 @@ export default {
       emailLogin: false,
       captchaEnabled: false,
       loginForm: {
-        username: '',
-        password: '',
+        email: '',
+        verifyCode: '',
         code: '',
         uuid: '',
         role: 'job_seeker'
       },
       codeUrl: '',
       rules: {
-        username: [{required: true, message: '请输入用户名或邮箱', trigger: 'blur'}],
-        phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
-        password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+        emailCode: [{required: true, message: '请输入邮箱', trigger: 'blur'}],
         code: [{required: true, message: '请输入验证码', trigger: 'blur'}]
       }
     }
@@ -70,12 +68,10 @@ export default {
   methods: {
     switchLoginMode() {
       this.emailLogin = !this.emailLogin
-      this.loginForm.username = ''
+      this.loginForm.email = ''
     },
     onRoleChange(tab) {
-      this.loginForm.username = ''
-      this.loginForm.phone = ''
-      this.loginForm.password = ''
+      this.loginForm.email = ''
       this.loginForm.code = ''
       this.getCode()
     },
@@ -88,25 +84,22 @@ export default {
         }
       });
     },
-    handleLogin() {
-      this.$refs.loginFormRef.validate(valid => {
+    sendEmailCode() {
+      this.loginForm.role = this.activeRole
+      this.$refs.loginFormRef.validate((valid) => {
         if (valid) {
-          this.loading = true;
-          this.loginForm.role = this.activeRole;
-          login(this.loginForm).then(resp => {
-            console.log(resp)
-            if (resp.code === 200) {
-              setToken(resp.data)
-              this.$router.push(this.activeRole === 'job_seeker' ? '/jobSeeker' : '/enterprise')
+          sendEmail(this.loginForm).then(res => {
+            if (res.code !== 200) {
+              this.$message.error(res.msg);
+              return;
             }
-          }).catch(() => {
-            this.loading = false;
-            if (this.captchaEnabled) {
-              this.getCode();
-            }
+            this.$message.success("登录邮件已发送，请注意查收")
           });
+
+        } else {
+          this.$message.error("请输入正确的邮箱")
         }
-      })
+      });
     }
   }
 }
