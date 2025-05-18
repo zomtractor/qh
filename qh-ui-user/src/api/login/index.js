@@ -24,6 +24,25 @@ export function register(data) {
     data: data
   })
 }
+export function sendEmail(data) {
+  return request({
+    url: '/login/sendEmail',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+export function tokenLogin(token) {
+    return request({
+        url: `/login/tokenLogin?token=${token}`,
+        headers: {
+          isToken: false
+        },
+        method: 'post',
+    })
+}
 
 // 获取用户详细信息
 export function getInfo() {

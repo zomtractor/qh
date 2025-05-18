@@ -6,8 +6,22 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    name: 'index',
+    component: () => import( '../views/index'),
+  },
+  {
+    path: '/login',
     name: 'login',
     component: () => import( '../views/login/index'),
+  },
+  {
+    path: '/email',
+    name: 'email',
+    component: () => import( '../views/login/email.vue'),
+  },  {
+    path: '/token/:token',
+    name: 'token',
+    component: () => import( '../views/login/token.vue'),
   },
   {
     path: '/jobSeeker',

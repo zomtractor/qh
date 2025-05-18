@@ -2,16 +2,11 @@
 package com.qh.recruit.user.controller;
 
 import com.qh.recruit.common.core.domain.AjaxResult;
-import com.qh.recruit.common.core.domain.model.LoginBody;
 import com.qh.recruit.user.domain.NLoginForm;
 import com.qh.recruit.user.service.LoginService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/login")
@@ -25,4 +20,14 @@ public class LoginController {
         return loginService.login(loginForm.getRole(),loginForm.getUsername(), loginForm.getPassword(), loginForm.getCode(),
                 loginForm.getUuid());
     }
+
+    @PostMapping("/sendEmail")
+    public AjaxResult sendEmail(@RequestBody NLoginForm loginForm) {
+        return loginService.sendEmail(loginForm.getRole(),loginForm.getEmail(),loginForm.getCode(), loginForm.getUuid());
+    }
+    @PostMapping("tokenLogin")
+    public AjaxResult tokenLogin(String token) {
+        return loginService.tokenLogin(token);
+    }
+
 }
