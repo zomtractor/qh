@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qh.recruit.admin.mapper.EtpMapper">
+    
+    <resultMap type="Etp" id="EtpResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="logoFileId"    column="logo_file_id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="legalPerson"    column="legal_person"    />
+        <result property="address"    column="address"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="website"    column="website"    />
+        <result property="popularity"    column="popularity"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+    <resultMap type="EtpDto" id="EtpResultDto">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="logoFileId"    column="logo_file_id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="legalPerson"    column="legal_person"    />
+        <result property="address"    column="address"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="website"    column="website"    />
+        <result property="popularity"    column="popularity"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectEtpVo">
+        select id, user_id, logo_file_id, name, description, legal_person, address, phone, email, website, popularity, create_time, update_time, status, version from tb_etp
+    </sql>
+    <sql id="selectEtpDto">
+        select e.id, user_id, logo_file_id, name, description, legal_person, address, phone, email, website, popularity, e.create_time, e.update_time, e.status, e.version,
+        u.username as user_name
+        from tb_etp e left join tb_user u on e.user_id=u.id
+    </sql>
+
+    <select id="selectEtpList" parameterType="Etp" resultMap="EtpResultDto">
+        <include refid="selectEtpDto"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="legalPerson != null  and legalPerson != ''"> and legal_person like concat('%', #{legalPerson}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone like concat('%', #{phone}, '%')</if>
+            <if test="website != null  and website != ''"> and website like concat('%', #{website}, '%')</if>
+            <if test="popularity != null "> and popularity = #{popularity}</if>
+        </where>
+    </select>
+    
+    <select id="selectEtpById" parameterType="Long" resultMap="EtpResultDto">
+        <include refid="selectEtpDto"/>
+        where e.id = #{id}
+    </select>
+
+    <insert id="insertEtp" parameterType="Etp" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_etp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="logoFileId != null">logo_file_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="description != null">description,</if>
+            <if test="legalPerson != null and legalPerson != ''">legal_person,</if>
+            <if test="address != null">address,</if>
+            <if test="phone != null">phone,</if>
+            <if test="email != null">email,</if>
+            <if test="website != null">website,</if>
+            <if test="popularity != null">popularity,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="version != null">version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="logoFileId != null">#{logoFileId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="legalPerson != null and legalPerson != ''">#{legalPerson},</if>
+            <if test="address != null">#{address},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="website != null">#{website},</if>
+            <if test="popularity != null">#{popularity},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="version != null">#{version},</if>
+         </trim>
+    </insert>
+
+    <update id="updateEtp" parameterType="Etp">
+        update tb_etp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="logoFileId != null">logo_file_id = #{logoFileId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="legalPerson != null and legalPerson != ''">legal_person = #{legalPerson},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="website != null">website = #{website},</if>
+            <if test="popularity != null">popularity = #{popularity},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="version != null">version = #{version},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteEtpById" parameterType="Long">
+        delete from tb_etp where id = #{id}
+    </delete>
+
+    <delete id="deleteEtpByIds" parameterType="String">
+        delete from tb_etp where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
