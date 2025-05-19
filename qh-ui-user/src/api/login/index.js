@@ -24,9 +24,19 @@ export function register(data) {
     data: data
   })
 }
-export function sendEmail(data) {
+export function sendLoginEmail(data) {
   return request({
-    url: '/login/sendEmail',
+    url: '/login/sendLoginEmail',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+export function sendRegisterEmail(data) {
+  return request({
+    url: '/login/sendRegisterEmail',
     headers: {
       isToken: false
     },
