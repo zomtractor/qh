@@ -53,6 +53,7 @@ module.exports = {
     },
     disableHostCheck: true
   },
+  lintOnSave: false,
   css: {
     loaderOptions: {
       sass: {
