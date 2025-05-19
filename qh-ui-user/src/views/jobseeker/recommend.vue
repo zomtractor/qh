@@ -3,12 +3,11 @@
     <!-- 筛选条件 -->
     <div class="filter-section">
       <div class="filter-tags">
-        <el-checkbox v-model="filters.skill">优先技能</el-checkbox>
-        <el-checkbox v-model="filters.salary">优先薪资</el-checkbox>
-        <el-checkbox v-model="filters.scale">优先规模</el-checkbox>
-        <el-checkbox v-model="filters.development">优先发展</el-checkbox>
-        <el-checkbox v-model="filters.interview">优先面试效率</el-checkbox>
-        <el-checkbox v-model="filters.welfare">优先福利</el-checkbox>
+        <el-radio-group v-model="filters.priority">
+          <el-radio label="skill">优先技能</el-radio>
+          <el-radio label="salary">优先薪资</el-radio>
+          <el-radio label="welfare">优先福利</el-radio>
+        </el-radio-group>
       </div>
       <div class="filter-selects">
         <el-select v-model="filters.city" placeholder="城市">
@@ -20,6 +19,7 @@
         <el-select v-model="filters.industry" placeholder="公司行业">
           <el-option label="测试公司" value="测试公司"></el-option>
         </el-select>
+        <el-button type="primary" @click="handleFilter">筛选</el-button>
       </div>
     </div>
 
@@ -35,7 +35,7 @@
               <span class="company-size">{{ job.companySize }}人以上</span>
             </div>
             <div class="job-tags">
-              <el-tag v-for="tag in job.tags" :key="tag" size="small">{{ tag }}</el-tag>
+              <el-tag v-for="tag in job.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
             </div>
           </div>
           <div class="right">
@@ -67,54 +67,78 @@
 </template>
 
 <script>
+import { getRecommendJobs, communicateWithRecruiter, submitResumeToJob } from '@/api/recommend/recommend'
 export default {
   name: 'Recommend',
   data() {
     return {
       filters: {
-        skill: true,
-        salary: false,
-        scale: false,
-        development: false,
-        interview: false,
-        welfare: false,
+        priority: 'skill',
         city: '',
         salaryRange: '',
         industry: ''
       },
       currentPage: 1,
-      jobs: [
-        {
-          title: 'Python开发工程师',
-          companyName: '测试公司',
-          companyLogo: '',
-          companySize: '9999',
-          salary: '7k-8k',
-          location: '福州',
-          tags: ['python', '后端开发', 'MySql'],
-          description: [
-            '1. 负责策划相关工具链构建及维护',
-            '2. 负责公司内自动化开发测试环境搭建及维护',
-            '3. 负责游戏运营相关大数据分析工具及后台支撑'
-          ]
-        }
-      ]
+      pageSize: 5,
+      total: 0,
+      jobs: []
     }
   },
   methods: {
-    handlePageChange(page) {
-      this.currentPage = page;
-      // TODO: 加载对应页面数据
+    // 获取职位列表数据
+    async fetchJobs() {
+      try {
+        const params = {
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          ...this.filters
+        }
+        const res = await getRecommendJobs(params)
+        this.jobs = res.data.list
+        this.total = res.data.total
+      } catch (error) {
+        this.$message.error('获取职位列表失败')
+        console.error('获取职位列表失败:', error)
+      }
     },
-    communicate(job) {
-      // TODO: 实现沟通功能
+    // 处理筛选条件
+    async handleFilter() {
+      this.currentPage = 1
+      await this.fetchJobs()
     },
-    submitResume(job) {
-      // TODO: 实现简历投递功能
+    // 处理分页变化
+    async handlePageChange(page) {
+      this.currentPage = page
+      await this.fetchJobs()
+    },
+    // 处理沟通请求
+    async communicate(job) {
+      try {
+        await communicateWithRecruiter({ jobId: job.id })
+        this.$message.success('已发起沟通请求')
+        // 这里可以添加跳转到聊天页面的逻辑
+        this.$router.push({
+          path: '/chat',
+          query: { jobId: job.id }
+        })
+      } catch (error) {
+        this.$message.error('发起沟通失败')
+        console.error('发起沟通失败:', error)
+      }
+    },
+    // 处理简历投递
+    async submitResume(job) {
+      try {
+        await submitResumeToJob({ jobId: job.id })
+        this.$message.success('简历投递成功')
+      } catch (error) {
+        this.$message.error('简历投递失败')
+        console.error('简历投递失败:', error)
+      }
     }
   },
   created() {
-    // TODO: 初始化加载数据
+    this.fetchJobs()
   }
 }
 </script>
@@ -134,16 +158,26 @@ export default {
 
     .filter-tags {
       margin-bottom: 20px;
-      .el-checkbox {
-        margin-right: 24px;
-        margin-bottom: 10px;
+      .el-radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        .el-radio {
+          margin-right: 24px;
+          margin-bottom: 10px;
+          line-height: 32px;
+        }
       }
     }
 
     .filter-selects {
+      display: flex;
+      align-items: center;
       .el-select {
         margin-right: 20px;
         width: 180px;
+      }
+      .el-button {
+        margin-left: auto;
       }
     }
   }
