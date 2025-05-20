@@ -1,17 +1,13 @@
-package com.qh.recruit.admin.domain;
+package com.qh.recruit.user.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.qh.recruit.common.annotation.Excel;
 import com.qh.recruit.common.core.domain.BaseEntity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * 岗位对象 tb_job
- * 
- * @author ruoyi
- * @date 2025-04-26
- */
-public class Job extends BaseEntity
+import java.util.Date;
+
+public class UserJob extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
@@ -60,143 +56,143 @@ public class Job extends BaseEntity
     /** $column.columnComment */
     private Long version;
 
-    public void setId(Long id) 
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
 
-    public void setName(String name) 
+    public void setName(String name)
     {
         this.name = name;
     }
 
-    public String getName() 
+    public String getName()
     {
         return name;
     }
 
-    public void setDescription(String description) 
+    public void setDescription(String description)
     {
         this.description = description;
     }
 
-    public String getDescription() 
+    public String getDescription()
     {
         return description;
     }
 
-    public void setSalaryDesc(String salaryDesc) 
+    public void setSalaryDesc(String salaryDesc)
     {
         this.salaryDesc = salaryDesc;
     }
 
-    public String getSalaryDesc() 
+    public String getSalaryDesc()
     {
         return salaryDesc;
     }
 
-    public void setLocation(String location) 
+    public void setLocation(String location)
     {
         this.location = location;
     }
 
-    public String getLocation() 
+    public String getLocation()
     {
         return location;
     }
 
-    public void setRequirement(String requirement) 
+    public void setRequirement(String requirement)
     {
         this.requirement = requirement;
     }
 
-    public String getRequirement() 
+    public String getRequirement()
     {
         return requirement;
     }
 
-    public void setEtpId(Long etpId) 
+    public void setEtpId(Long etpId)
     {
         this.etpId = etpId;
     }
 
-    public Long getEtpId() 
+    public Long getEtpId()
     {
         return etpId;
     }
 
-    public void setCategoryIds(String categoryIds) 
+    public void setCategoryIds(String categoryIds)
     {
         this.categoryIds = categoryIds;
     }
 
-    public String getCategoryIds() 
+    public String getCategoryIds()
     {
         return categoryIds;
     }
 
-    public void setTagIds(String tagIds) 
+    public void setTagIds(String tagIds)
     {
         this.tagIds = tagIds;
     }
 
-    public String getTagIds() 
+    public String getTagIds()
     {
         return tagIds;
     }
 
-    public void setPopularity(Long popularity) 
+    public void setPopularity(Long popularity)
     {
         this.popularity = popularity;
     }
 
-    public Long getPopularity() 
+    public Long getPopularity()
     {
         return popularity;
     }
 
-    public void setStatus(Integer status) 
+    public void setStatus(Integer status)
     {
         this.status = status;
     }
 
-    public Integer getStatus() 
+    public Integer getStatus()
     {
         return status;
     }
 
-    public void setVersion(Long version) 
+    public void setVersion(Long version)
     {
         this.version = version;
     }
 
-    public Long getVersion() 
+    public Long getVersion()
     {
         return version;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("name", getName())
-            .append("description", getDescription())
-            .append("salaryDesc", getSalaryDesc())
-            .append("location", getLocation())
-            .append("requirement", getRequirement())
-            .append("etpId", getEtpId())
-            .append("categoryIds", getCategoryIds())
-            .append("tagIds", getTagIds())
-            .append("popularity", getPopularity())
-            .append("createTime", getCreateTime())
-            .append("updateTime", getUpdateTime())
-            .append("status", getStatus())
-            .append("version", getVersion())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId())
+                .append("name", getName())
+                .append("description", getDescription())
+                .append("salaryDesc", getSalaryDesc())
+                .append("location", getLocation())
+                .append("requirement", getRequirement())
+                .append("etpId", getEtpId())
+                .append("categoryIds", getCategoryIds())
+                .append("tagIds", getTagIds())
+                .append("popularity", getPopularity())
+                .append("createTime", getCreateTime())
+                .append("updateTime", getUpdateTime())
+                .append("status", getStatus())
+                .append("version", getVersion())
+                .toString();
     }
 }

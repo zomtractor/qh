@@ -1,21 +1,16 @@
 // LoginService.java
 package com.qh.recruit.user.service;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.qh.recruit.admin.domain.Etp;
-import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.domain.User;
-import com.qh.recruit.admin.mapper.EtpMapper;
-import com.qh.recruit.admin.mapper.ResumeMapper;
 import com.qh.recruit.admin.mapper.UserMapper;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.redis.RedisCache;
 import com.qh.recruit.common.exception.user.UserException;
+import com.qh.recruit.common.utils.bean.BeanUtils;
 import com.qh.recruit.common.utils.spring.SpringUtils;
 import com.qh.recruit.common.utils.uuid.IdUtils;
 import com.qh.recruit.framework.web.service.SysLoginService;
 import com.qh.recruit.user.util.email.LoginEmailSender;
-import com.qh.recruit.user.util.email.RegisterEmailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,9 +18,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
 @Service
 public class LoginService {
@@ -35,12 +28,6 @@ public class LoginService {
 
     @Resource
     private UserMapper userMapper;
-
-    @Resource
-    private EtpMapper etpMapper;
-
-    @Resource
-    private ResumeMapper resumeMapper;
 
     @Resource
     private RedisCache redisCache;
@@ -104,7 +91,7 @@ public class LoginService {
     }
 
 
-    public AjaxResult sendLoginEmail(String role, String email, String code, String uuid) {
+    public AjaxResult sendEmail(String role, String email, String code, String uuid) {
         User user = "job_seeker".equals(role) ? userMapper.selectJobSeekerByIdentifier(email) : userMapper.selectEnterpriseByIdentifier(email);
         if(user == null) {
             return AjaxResult.error("用户不存在或身份不匹配");
@@ -133,77 +120,6 @@ public class LoginService {
         if (user == null) {
             return AjaxResult.error("用户不存在");
         }
-        Map<String,Object> data;
-        if("job_seeker".equals(user.getUserType())) {
-            Resume resume = resumeMapper.selectResumeByUserId(id);
-            data = BeanUtil.beanToMap(resume);
-        } else {
-            Etp etp = etpMapper.selectEtpByUserId(id);
-            data = BeanUtil.beanToMap(etp);
-        }
-        data.putAll(BeanUtil.beanToMap(user));
-        return AjaxResult.success("登录成功",data);
-    }
-
-    public AjaxResult sendRegisterEmail(String role, String email, String code, String uuid) {
-        try {
-            sysLoginService.validateCaptcha("email", code, uuid);
-        }catch (UserException e) {
-            return AjaxResult.error(e.getMessage());
-        }
-        User user = "job_seeker".equals(role) ? userMapper.selectJobSeekerByIdentifier(email) : userMapper.selectEnterpriseByIdentifier(email);
-        if(user != null) {
-            return AjaxResult.error("用户已存在！");
-        }
-        RegisterEmailSender registerEmailSender = SpringUtils.getBean(RegisterEmailSender.class);
-        String verifyCode =  generateVerifyCode();
-        template.opsForValue().set("verifyCode:" + email, verifyCode, Duration.ofMinutes(5));
-        try {
-            registerEmailSender.sendVerificationEmail(email,verifyCode);
-        } catch (Exception e) {
-            return AjaxResult.error("邮箱发送失败");
-        }
-        return AjaxResult.success();
-    }
-
-    private String generateVerifyCode(){
-        Random random = new Random();
-        int randomNumber = random.nextInt(1000000);
-        return String.format("%06d", randomNumber);
-    }
-
-    public AjaxResult register(String role, String username, String password, String email, String phone, String verifyCode) {
-        User user = "job_seeker".equals(role) ? userMapper.selectJobSeekerByIdentifier(email) : userMapper.selectEnterpriseByIdentifier(email);
-        if(user != null) {
-            return AjaxResult.error("用户已存在！");
-        }
-        String verifyRef = template.opsForValue().get("verifyCode:" + email);
-        if (StringUtils.isEmpty(verifyRef)) {
-            return AjaxResult.error("验证码已过期");
-        }
-        if (!verifyRef.equals(verifyCode)) {
-            return AjaxResult.error("验证码错误");
-        }
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(password);
-        newUser.setUserType(role);
-        userMapper.insertUser(newUser);
-        if ("enterprise".equals(role)) {
-            Etp etp = new Etp();
-            etp.setName(username);
-            etp.setEmail(email);
-            etp.setPhone(phone);
-            etp.setUserId(newUser.getId());
-            etpMapper.insertEtp(etp);
-        } else {
-            Resume resume = new Resume();
-            resume.setName(username);
-            resume.setEmail(email);
-            resume.setPhone(phone);
-            resume.setUserId(newUser.getId());
-            resumeMapper.insertResume(resume);
-        }
-        return AjaxResult.success();
+        return AjaxResult.success("登录成功", createToken(user));
     }
 }

@@ -58,6 +58,4 @@ public interface EtpMapper
      * @return 结果
      */
     public int deleteEtpByIds(Long[] ids);
-
-    Etp selectEtpByUserId(Long id);
 }

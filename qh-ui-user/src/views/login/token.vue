@@ -20,11 +20,12 @@ export default {
         return;
       }
       this.$message.success("登录成功")
+      setToken(res.data.token)
       this.$router.push({path: '/'})
     }).catch(err => {
       this.$message.error(err)
     })
-    window.location.href="/"
+    window.location.href="../"
   },
   methods: {
   }
