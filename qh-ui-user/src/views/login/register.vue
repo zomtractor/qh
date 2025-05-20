@@ -6,11 +6,6 @@
         <el-tab-pane label="我是招聘员" name="enterprise"></el-tab-pane>
       </el-tabs>
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef">
-        <div class="form-header">
-            <span class="login-mode-switch" @click="switchLoginMode">
-              <a href="email">邮箱登录</a>
-            </span>
-        </div>
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名"/>
         </el-form-item>
@@ -35,7 +30,7 @@
             <el-col :span="18">
               <el-input v-model="loginForm.verifyCode" placeholder="请输入邮箱验证码"/>
             </el-col>
-            <el-col :span="16">
+            <el-col :span="6">
               <el-button @click="sendEmail" class="login-code-img">发送</el-button>
             </el-col>
           </el-row>
@@ -44,11 +39,12 @@
           <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"/>
         </el-form-item>
         <el-form-item prop="rePassword">
-          <el-input v-model="loginForm.password" type="password" placeholder="请再次输入密码"/>
+          <el-input v-model="loginForm.repassword" type="password" placeholder="请再次输入密码"/>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-button type="primary" @click="handleRegister">注册</el-button>
+          <el-button type="warning" @click="goLogin">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -56,7 +52,7 @@
 </template>
 
 <script>
-import {getCodeImg, login} from '@/api/login'
+import {getCodeImg, login, register, sendRegisterEmail} from '@/api/login'
 import {setToken} from '@/utils/auth'
 
 export default {
@@ -69,6 +65,7 @@ export default {
       loginForm: {
         username: '',
         password: '',
+        repassword: '',
         code: '',
         uuid: '',
         role: 'job_seeker'
@@ -106,16 +103,19 @@ export default {
         }
       });
     },
-    handleLogin() {
+    handleRegister() {
       this.$refs.loginFormRef.validate(valid => {
         if (valid) {
           this.loading = true;
           this.loginForm.role = this.activeRole;
-          login(this.loginForm).then(resp => {
+          register(this.loginForm).then(resp => {
             console.log(resp)
             if (resp.code === 200) {
-              setToken(resp.data)
-              this.$router.push(this.activeRole === 'job_seeker' ? '/jobSeeker' : '/enterprise')
+              this.$message.success('注册成功')
+              setTimeout(()=>{
+                window.location.href='login'
+              },500)
+
             }
           }).catch(() => {
             this.loading = false;
@@ -127,7 +127,21 @@ export default {
       })
     },
     sendEmail(){
-      sendRegisterEmail()
+      sendRegisterEmail(this.loginForm).then(resp=>{
+        if (resp.code === 200) {
+          this.$message({
+            message: '验证码已发送，请注意查收',
+            type: 'success'
+          });
+        } else {
+          this.$message.error(resp.msg);
+        }
+      }).catch(() => {
+        this.loading = false;
+      })
+    },
+    goLogin(){
+      window.location.href='login'
     }
   }
 }
