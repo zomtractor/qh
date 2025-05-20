@@ -106,6 +106,7 @@ export default {
       });
     },
     handleRegister() {
+      this.loginForm.role = this.activeRole
       this.$refs.loginFormRef.validate(valid => {
         if (valid) {
           this.loading = true;
