@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import {getCodeImg, sendEmail} from '@/api/login'
+import {getCodeImg, sendLoginEmail} from '@/api/login'
 
 export default {
   name: 'Login',
@@ -88,7 +88,7 @@ export default {
       this.loginForm.role = this.activeRole
       this.$refs.loginFormRef.validate((valid) => {
         if (valid) {
-          sendEmail(this.loginForm).then(res => {
+          sendLoginEmail(this.loginForm).then(res => {
             if (res.code !== 200) {
               this.$message.error(res.msg);
               return;

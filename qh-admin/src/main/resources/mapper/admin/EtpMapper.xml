@@ -65,6 +65,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectEtpDto"/>
         where e.id = #{id}
     </select>
+    <select id="selectEtpByUserId" resultMap="EtpResultDto">
+        <include refid="selectEtpDto"/>
+        where e.user_id = #{userId}
+    </select>
 
     <insert id="insertEtp" parameterType="Etp" useGeneratedKeys="true" keyProperty="id">
         insert into tb_etp
