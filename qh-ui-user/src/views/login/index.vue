@@ -31,7 +31,6 @@
 
         <el-form-item>
           <el-button type="primary" @click="handleLogin">登录</el-button>
-          <el-button type="warning" @click="goRegister">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -54,7 +53,6 @@ export default {
         password: '',
         code: '',
         uuid: '',
-        verifyCode: '',
         role: 'job_seeker'
       },
       codeUrl: '',
@@ -109,9 +107,6 @@ export default {
           });
         }
       })
-    },
-    goRegister(){
-      window.location.href = '/register'
     }
   }
 }

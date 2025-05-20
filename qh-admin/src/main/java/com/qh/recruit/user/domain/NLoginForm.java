@@ -8,8 +8,6 @@ public class NLoginForm{
     private String uuid;
     private String role;
     private String email;
-    private String phone;
-    private String verifyCode;
 
     public String getEmail() {
         return email;
@@ -57,21 +55,5 @@ public class NLoginForm{
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getVerifyCode() {
-        return verifyCode;
-    }
-
-    public void setVerifyCode(String verifyCode) {
-        this.verifyCode = verifyCode;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }

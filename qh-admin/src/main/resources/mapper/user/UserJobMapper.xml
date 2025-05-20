@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.recruit.user.mapper.UserJobMapper">
+    <select id="selectJobList" resultType="UserJob">
+        SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
+               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
+               update_time AS updateTime, status, version
+        FROM tb_job
+    </select>
+
+    <select id="searchJobList" resultType="UserJob">
+        SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
+               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
+               update_time AS updateTime, status, version
+        FROM tb_job
+        where name=#{keyword}
+    </select>
+
+    <select id="searchCategoryId" resultType="Integer">
+        select id from tb_category
+        where name=#{category}
+    </select>
+
+    <select id="confirm" resultType="UserJob">
+        select id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
+               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
+               update_time AS updateTime, status, version
+        FROM tb_job
+        where location = #{arg0} and category_ids = #{arg1} and salary_desc between #{arg2} and #{arg3}
+    </select>
+</mapper>
