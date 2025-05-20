@@ -66,6 +66,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectResumeDto"/>
         where r.id = #{id}
     </select>
+    <select id="selectResumeByUserId" resultMap="ResumeResultDto">
+        <include refid="selectResumeDto"/>
+        where r.user_id = #{userId}
+    </select>
 
     <insert id="insertResume" parameterType="Resume" useGeneratedKeys="true" keyProperty="id">
         insert into tb_resume
