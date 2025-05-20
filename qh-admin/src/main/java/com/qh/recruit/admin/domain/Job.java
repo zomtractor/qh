@@ -26,8 +26,8 @@ public class Job extends BaseEntity
     @Excel(name = "岗位职责")
     private String description;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 工资 */
+    @Excel(name = "工资")
     private String salaryDesc;
 
     /** 工作地点 */

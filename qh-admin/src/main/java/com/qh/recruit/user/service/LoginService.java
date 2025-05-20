@@ -1,13 +1,13 @@
 // LoginService.java
 package com.qh.recruit.user.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.qh.recruit.admin.domain.Etp;
 import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.domain.User;
 import com.qh.recruit.admin.mapper.EtpMapper;
 import com.qh.recruit.admin.mapper.ResumeMapper;
 import com.qh.recruit.admin.mapper.UserMapper;
-import com.qh.recruit.common.annotation.RepeatSubmit;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.redis.RedisCache;
 import com.qh.recruit.common.exception.user.UserException;
@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -132,7 +133,16 @@ public class LoginService {
         if (user == null) {
             return AjaxResult.error("用户不存在");
         }
-        return AjaxResult.success("登录成功", createToken(user));
+        Map<String,Object> data;
+        if("job_seeker".equals(user.getUserType())) {
+            Resume resume = resumeMapper.selectResumeByUserId(id);
+            data = BeanUtil.beanToMap(resume);
+        } else {
+            Etp etp = etpMapper.selectEtpByUserId(id);
+            data = BeanUtil.beanToMap(etp);
+        }
+        data.putAll(BeanUtil.beanToMap(user));
+        return AjaxResult.success("登录成功",data);
     }
 
     public AjaxResult sendRegisterEmail(String role, String email, String code, String uuid) {
@@ -179,7 +189,7 @@ public class LoginService {
         newUser.setPassword(password);
         newUser.setUserType(role);
         userMapper.insertUser(newUser);
-        if ("job_seeker".equals(role)) {
+        if ("enterprise".equals(role)) {
             Etp etp = new Etp();
             etp.setName(username);
             etp.setEmail(email);

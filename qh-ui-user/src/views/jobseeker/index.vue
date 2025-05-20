@@ -20,16 +20,14 @@
           </el-menu>
         </div>
         <div class="nav-right">
-          <el-input
-              placeholder="搜公司、职位"
-              prefix-icon="el-icon-search"
-              class="nav-search"
-              v-model="searchText"
-              clearable
-          />
           <div class="user-info">
-            <span class="user-name">昵称</span>
-            <el-avatar :size="32" src="https://img.icons8.com/color/48/user.png" />
+            <span >{{currentUser.name}}</span>
+            <el-dropdown @command="logout">
+              <image-preview :src="currentUser.avatarFileId" width="32px" height="32px" />
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
         </div>
       </el-header>
@@ -46,6 +44,9 @@ import Home from "./home.vue";
 import Recommend from "./recommend.vue";
 import Message from "./message.vue";
 import Resume from "./resume.vue";
+import {getToken, removeToken} from "@/utils/auth";
+import {tokenLogin} from "@/api/login";
+import {setCurrentUser} from "@/utils/local";
 
 export default {
   name: 'JobSeeker',
@@ -59,6 +60,14 @@ export default {
         Message,
         Resume,
       },
+      currentUser: {
+        id: "",
+        name: "",
+        email: "",
+        phone: "",
+        avatarFileId: "",
+        role: "job_seeker",
+      }
     };
   },
   computed: {
@@ -66,10 +75,41 @@ export default {
       return this.componentsMap[this.activeMenu];
     },
   },
+  mounted() {
+    tokenLogin(getToken()).then(res => {
+      if (res.code !== 200) {
+        removeToken()
+        this.$message.error(res.msg);
+        window.location.href='/'
+      }
+      console.log(res.data)
+      setCurrentUser(res.data)
+      this.currentUser = res.data
+    }).catch(err => {
+      removeToken()
+      this.$message.error(err)
+      window.location.href='/'
+    })
+  },
   methods: {
     changeMenu(index) {
       this.activeMenu = index;
     },
+    logout(){
+      this.$confirm('确定要退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message.success('退出成功')
+        removeToken()
+        setTimeout(()=>{
+          window.location.href='/'
+        },1000)
+      }).catch(() => {
+        this.$message.info('取消登出')
+      });
+    }
   },
 };
 </script>

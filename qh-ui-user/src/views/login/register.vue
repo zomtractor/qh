@@ -66,6 +66,8 @@ export default {
         username: '',
         password: '',
         repassword: '',
+        email:'',
+        phone: '',
         code: '',
         uuid: '',
         role: 'job_seeker'
@@ -127,6 +129,7 @@ export default {
       })
     },
     sendEmail(){
+      this.loginForm.role = this.activeRole
       sendRegisterEmail(this.loginForm).then(resp=>{
         if (resp.code === 200) {
           this.$message({
