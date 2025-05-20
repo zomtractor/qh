@@ -36,6 +36,10 @@ const routes = [
     path: '/enterprise',
     name: 'enterprise',
     component: () => import( '../views/enterprise/index'),
+  },{
+    path: '/jobSeeker/resume',
+    name: 'resume',
+    component: () => import( '../views/jobseeker/resume'),
   },
 ]
 
