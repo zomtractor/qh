@@ -1,17 +1,18 @@
 package com.qh.recruit.user.controller;
 
 import com.qh.recruit.common.core.domain.AjaxResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/jobSeeker")
 public class JobSeekerController {
 
-    @GetMapping
-    public AjaxResult method(){
+
+
+    @PostMapping("all")
+    public AjaxResult all() {
         return AjaxResult.success();
     }
 }

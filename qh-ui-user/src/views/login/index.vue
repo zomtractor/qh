@@ -53,6 +53,7 @@ export default {
         password: '',
         code: '',
         uuid: '',
+        verifyCode: '',
         role: 'job_seeker'
       },
       codeUrl: '',
