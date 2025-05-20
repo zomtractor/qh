@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询岗位列表
 export function listJob(query) {
   return request({
-    url: '/admin/job/list',
+    url: '/etp/job/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listJob(query) {
 // 查询岗位详细
 export function getJob(id) {
   return request({
-    url: '/admin/job/' + id,
+    url: '/etp/job/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getJob(id) {
 // 新增岗位
 export function addJob(data) {
   return request({
-    url: '/admin/job',
+    url: '/etp/job',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addJob(data) {
 // 修改岗位
 export function updateJob(data) {
   return request({
-    url: '/admin/job',
+    url: '/etp/job',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateJob(data) {
 // 删除岗位
 export function delJob(id) {
   return request({
-    url: '/admin/job/' + id,
+    url: '/etp/job/' + id,
     method: 'delete'
   })
 }
