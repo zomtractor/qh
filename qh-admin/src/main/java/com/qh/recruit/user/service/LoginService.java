@@ -181,12 +181,14 @@ public class LoginService {
         userMapper.insertUser(newUser);
         if ("job_seeker".equals(role)) {
             Etp etp = new Etp();
+            etp.setName(username);
             etp.setEmail(email);
             etp.setPhone(phone);
             etp.setUserId(newUser.getId());
             etpMapper.insertEtp(etp);
         } else {
             Resume resume = new Resume();
+            resume.setName(username);
             resume.setEmail(email);
             resume.setPhone(phone);
             resume.setUserId(newUser.getId());
