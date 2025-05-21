@@ -2,6 +2,7 @@ package com.qh.recruit.admin.service;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Category;
+import org.springframework.stereotype.Service;
 
 /**
  * 分类管理Service接口

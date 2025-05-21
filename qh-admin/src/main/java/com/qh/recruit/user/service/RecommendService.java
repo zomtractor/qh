@@ -1,6 +1,7 @@
 package com.qh.recruit.user.service;
 
 import com.qh.recruit.common.core.domain.AjaxResult;
+import com.qh.recruit.common.core.domain.model.LoginUser;
 import com.qh.recruit.common.core.page.TableDataInfo;
 import com.qh.recruit.user.domain.JobRecommendQuery;
 
@@ -15,21 +16,6 @@ public interface RecommendService {
      * @param query 查询条件
      * @return 职位列表
      */
-    AjaxResult getRecommendJobs(JobRecommendQuery query);
+    AjaxResult getRecommendJobs(JobRecommendQuery query, LoginUser loginUser);
 
-    /**
-     * 发起沟通
-     *
-     * @param jobId 职位ID
-     * @return 操作结果
-     */
-    AjaxResult communicate(Long jobId);
-
-    /**
-     * 投递简历
-     *
-     * @param jobId 职位ID
-     * @return 操作结果
-     */
-    AjaxResult submitResume(Long jobId);
 }

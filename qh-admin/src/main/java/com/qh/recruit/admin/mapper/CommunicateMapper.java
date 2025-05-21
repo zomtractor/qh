@@ -2,6 +2,7 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Communicate;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 沟通Mapper接口
@@ -9,6 +10,7 @@ import com.qh.recruit.admin.domain.Communicate;
  * @author ruoyi
  * @date 2025-05-02
  */
+@Mapper
 public interface CommunicateMapper 
 {
     /**

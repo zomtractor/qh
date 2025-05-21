@@ -2,6 +2,7 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Comment;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 评价Mapper接口

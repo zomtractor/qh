@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qh.recruit.user.mapper.RecommendJobMapper">
+
+
+    <select id="selectByJobName" resultType="java.lang.Integer">
+        select count(1)
+        from qh.tb_job as j
+        where j.name like concat('%',#{name},'%')
+    </select>
+    <select id="selectBySalary" resultType="java.lang.Integer">
+        select count(1)
+        from qh.tb_job as j
+        where salary_desc between 0 and #{salaryDesc}
+    </select>
+
+
+</mapper>

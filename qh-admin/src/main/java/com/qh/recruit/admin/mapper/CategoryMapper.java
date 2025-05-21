@@ -2,6 +2,9 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Category;
+import org.apache.ibatis.annotations.Mapper;
+
+import javax.management.MXBean;
 
 /**
  * 分类管理Mapper接口
