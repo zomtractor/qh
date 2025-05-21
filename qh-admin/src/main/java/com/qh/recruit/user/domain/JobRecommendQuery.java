@@ -17,7 +17,7 @@ public class JobRecommendQuery {
     /**
      * 期望薪资
      */
-    private String salaryRange;
+    private String salary;
 
     /**
      * 公司行业
@@ -38,4 +38,7 @@ public class JobRecommendQuery {
      * 每页数量
      */
     private Integer pageSize;
+
+
+
 }

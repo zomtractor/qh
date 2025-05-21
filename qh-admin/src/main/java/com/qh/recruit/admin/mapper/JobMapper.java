@@ -58,4 +58,6 @@ public interface JobMapper
      * @return 结果
      */
     public int deleteJobByIds(Long[] ids);
+
+
 }

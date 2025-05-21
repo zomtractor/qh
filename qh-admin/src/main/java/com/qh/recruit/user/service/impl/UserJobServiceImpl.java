@@ -1,5 +1,7 @@
 package com.qh.recruit.user.service.impl;
 
+import com.qh.recruit.admin.domain.Resume;
+import com.qh.recruit.common.core.domain.model.LoginUser;
 import com.qh.recruit.common.core.page.TableDataInfo;
 import com.qh.recruit.user.domain.UserJob;
 import com.qh.recruit.user.mapper.UserJobMapper;
@@ -65,7 +67,10 @@ public class UserJobServiceImpl implements UserJobService {
             result[0]=10000;
             result[1]=14999;
         }
-        else{
+        else if (salary.isEmpty()){
+            result[0]=0;
+            result[1]=Integer.MAX_VALUE;
+        }else {
             result[0]=15000;
             result[1]=Integer.MAX_VALUE;
         }

@@ -3,52 +3,63 @@
     <!-- 筛选条件 -->
     <div class="filter-section">
       <div class="filter-tags">
-        <el-radio-group v-model="filters.priority">
+        <el-radio-group v-model="priority">
           <el-radio label="skill">优先技能</el-radio>
-          <el-radio label="salary">优先薪资</el-radio>
+          <el-radio label="hot">优先热度</el-radio>
           <el-radio label="welfare">优先福利</el-radio>
         </el-radio-group>
       </div>
       <div class="filter-selects">
-        <el-select v-model="filters.city" placeholder="城市">
-          <el-option label="福州" value="福州"></el-option>
+        <el-select v-model="city" placeholder="选择城市">
+          <el-option
+            v-for="item in cities"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
         </el-select>
-        <el-select v-model="filters.salaryRange" placeholder="薪资">
-          <el-option label="7k-8k" value="7k-8k"></el-option>
+        <el-select v-model="salary" placeholder="选择薪资">
+          <el-option
+            v-for="item in salaries"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
         </el-select>
-        <el-select v-model="filters.industry" placeholder="公司行业">
-          <el-option label="测试公司" value="测试公司"></el-option>
+        <el-select v-model="industry" placeholder="选择公司行业">
+          <el-option
+            v-for="item in industries"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
         </el-select>
         <el-button type="primary" @click="handleFilter">筛选</el-button>
       </div>
     </div>
 
-    <!-- 职位列表 -->
+    <!-- 职位卡片 -->
     <div class="job-list">
-      <div v-for="(job, index) in jobs" :key="index" class="job-card">
+      <div class="job-card" v-for="(item, index) in jobs" :key="index">
         <div class="job-header">
-          <div class="left">
-            <h3 class="job-title">{{ job.title }}</h3>
-            <div class="company-info">
-              <img :src="job.companyLogo" class="company-logo">
-              <span class="company-name">{{ job.companyName }}</span>
-              <span class="company-size">{{ job.companySize }}人以上</span>
-            </div>
-            <div class="job-tags">
-              <el-tag v-for="tag in job.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
-            </div>
-          </div>
-          <div class="right">
-            <div class="salary">{{ job.salary }}</div>
-            <div class="location">{{ job.location }}</div>
-            <div class="action-buttons">
-              <el-button type="primary" size="small" @click="communicate(job)">沟通</el-button>
-              <el-button size="small" @click="submitResume(job)">投递简历</el-button>
-            </div>
-          </div>
+          <div class="job-title">{{ item.userJob.name }}</div>
+          <div class="match-score">匹配度：{{ item.score.toFixed(2) }}</div>
+        </div>
+        <div class="job-info">
+          <div class="salary">薪资：{{ item.userJob.salaryDesc }}</div>
+          <div class="location">地点：{{ item.userJob.location }}</div>
         </div>
         <div class="job-description">
-          <div v-for="(desc, idx) in job.description" :key="idx">{{ desc }}</div>
+          <div class="description-title">职位描述：</div>
+          <div class="description-content">{{ item.userJob.description }}</div>
+        </div>
+        <div class="job-requirement">
+          <div class="requirement-title">职位要求：</div>
+          <div class="requirement-content">{{ item.userJob.requirement }}</div>
+        </div>
+        <div class="action-buttons">
+          <el-button type="primary" @click="communicate(item.userJob)">沟通</el-button>
+          <el-button type="success" @click="submitResume(item.userJob)">投递简历</el-button>
         </div>
       </div>
     </div>
@@ -69,19 +80,67 @@
 <script>
 import { getRecommendJobs, communicateWithRecruiter, submitResumeToJob } from '@/api/recommend/recommend'
 export default {
-  name: 'Recommend',
   data() {
     return {
-      filters: {
-        priority: 'skill',
+      priority: 'skill', // 推荐算法
         city: '',
-        salaryRange: '',
-        industry: ''
-      },
+        salary: '',
+        industry: '',
+      cities: [
+        '北京', '上海', '广州', '深圳', '天津', '重庆', '杭州', '南京', '武汉', '成都',
+        '西安', '长沙', '沈阳', '哈尔滨', '长春', '济南', '郑州', '合肥', '福州', '南昌',
+        '昆明', '贵阳', '南宁', '太原', '石家庄', '兰州', '西宁', '银川', '乌鲁木齐', '海口'
+      ],
+      salaries: [
+        '5k以下', '5-10k', '10-15k', '15k以上'
+      ],
+      industries: [
+        '国企', '外企', '民企', '事业单位', '银行', '央企'
+      ],
       currentPage: 1,
-      pageSize: 5,
-      total: 0,
-      jobs: []
+      pageSize: 8,
+      total: 60,
+      jobs: [
+        {
+          title: 'Python开发工程师',
+          company: '测试公司',
+          size: '人数：9999以上',
+          skills: ['python', '后端开发', 'MySQL'],
+          description: [
+            '负责策划相关工具链构建及维护',
+            '负责公司内自动化开发测试环境搭建及维护',
+            '负责游戏运营相关大数据分析工具及后台支撑'
+          ],
+          salary: '薪资：7k-8k',
+          location: '地点：福州'
+        },
+        {
+          title: 'Python开发工程师',
+          company: '测试公司',
+          size: '人数：9999以上',
+          skills: ['python', '后端开发', 'MySQL'],
+          description: [
+            '负责策划相关工具链构建及维护',
+            '负责公司内自动化开发测试环境搭建及维护',
+            '负责游戏运营相关大数据分析工具及后台支撑'
+          ],
+          salary: '薪资：7k-8k',
+          location: '地点：福州'
+        },
+        {
+          title: 'Python开发工程师',
+          company: '测试公司',
+          size: '人数：9999以上',
+          skills: ['python', '后端开发', 'MySQL'],
+          description: [
+            '负责策划相关工具链构建及维护',
+            '负责公司内自动化开发测试环境搭建及维护',
+            '负责游戏运营相关大数据分析工具及后台支撑'
+          ],
+          salary: '薪资：7k-8k',
+          location: '地点：福州'
+        }
+      ]
     }
   },
   methods: {
@@ -91,11 +150,14 @@ export default {
         const params = {
           page: this.currentPage,
           pageSize: this.pageSize,
-          ...this.filters
+          city: this.city,
+          priority: this.priority,
+          salary: this.salary,
+          industry: this.industry,
         }
         const res = await getRecommendJobs(params)
-        this.jobs = res.data.list
-        this.total = res.data.total
+        this.jobs = res.data
+        console.log(res.data.total)
       } catch (error) {
         this.$message.error('获取职位列表失败')
         console.error('获取职位列表失败:', error)
@@ -181,120 +243,89 @@ export default {
       }
     }
   }
-
-  .job-list {
-    .job-card {
-      background: #fff;
-      padding: 24px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,.05);
-      transition: all 0.3s ease;
-      border: 1px solid transparent;
-      
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px 0 rgba(0,0,0,.1);
-        border-color: #e6e6e6;
-      }
-
-      .job-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-
-        .left {
-          flex: 1;
-          padding-right: 20px;
-
-          .job-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #303133;
-
-            &:hover {
-              color: #409EFF;
-              cursor: pointer;
-            }
-          }
-
-          .company-info {
-            display: flex;
-            align-items: center;
-            color: #606266;
-            
-            .company-logo {
-              width: 40px;
-              height: 40px;
-              margin-right: 12px;
-              border-radius: 4px;
-              object-fit: cover;
-              border: 1px solid #ebeef5;
-            }
-
-            .company-name {
-              margin-right: 15px;
-              font-size: 14px;
-              &:hover {
-                color: #409EFF;
-                cursor: pointer;
-              }
-            }
-
-            .company-size {
-              color: #909399;
-              font-size: 13px;
-            }
-          }
-        }
-
-        .right {
-          text-align: right;
-          min-width: 160px;
-          
-          .salary {
-            color: #f56c6c;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-          }
-
-          .location {
-            color: #909399;
-            font-size: 13px;
-            margin-bottom: 12px;
-          }
-
-          .action-buttons {
-            .el-button {
-              margin-left: 8px;
-              padding: 8px 12px;
-              font-size: 13px;
-
-              &:first-child {
-                margin-left: 0;
-              }
-            }
-          }
-        }
-      }
-      .job-description {
-        margin-top: 16px;
-        margin-bottom: 20px;
-        color: #606266;
-        line-height: 1.8;
-        font-size: 14px;
-        
-        div {
-          margin-bottom: 6px;
-          &:last-child {
-            margin-bottom: 0;
-          }
-        }
-      }
+  
+.job-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
-  }
+
+    .job-card {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .job-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #303133;
+    }
+
+    .match-score {
+      font-size: 16px;
+      font-weight: bold;
+      color: #67c23a;
+      padding: 4px 8px;
+      background-color: #f0f9eb;
+      border-radius: 4px;
+    }
+
+    .job-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #606266;
+    }
+
+    .job-description,
+    .job-requirement {
+      margin-bottom: 15px;
+    }
+
+    .description-title,
+    .requirement-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #303133;
+      margin-bottom: 8px;
+    }
+
+    .description-content,
+    .requirement-content {
+      font-size: 14px;
+      color: #606266;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .action-buttons .el-button {
+      width: 48%;
+      font-size: 14px;
+    }
+  
 }
 </style>
-</template>
