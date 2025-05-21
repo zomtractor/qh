@@ -43,7 +43,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="LoginDto" id="LoginDto">
         <result property="id"    column="id"    />
         <result property="refId"    column="ref_id"    />
-        <result property="username"    column=""    />
+        <result property="username"    column="username"    />
+        <result property="userType"    column="user_type"    />
         <result property="name"    column="name"    />
         <result property="avatar"    column="avatar_file_id"    />
         <result property="phone"    column="phone"    />
@@ -80,10 +81,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where r.user_id = #{userId}
     </select>
     <select id="selectResumeChatted" resultMap="LoginDto">
-        SELECT r.id as ref_id,r.name,r.avatar_file_id,r.phone,r.email,u.username,u.id
+        SELECT distinct r.id as ref_id,r.name,r.avatar_file_id,r.phone,r.email,u.username,u.id, u.user_type
         FROM tb_communicate c
-                 JOIN tb_resume r ON r.user_id = #{id} AND (r.user_id = c.receiver_id OR r.user_id = c.poster_id)
-                 LEFT JOIN tb_user u ON r.user_id = u.id
+                 LEFT JOIN tb_resume r ON r.user_id = c.poster_id
+                 LEFT JOIN tb_user u ON u.id = r.user_id
+        where c.receiver_id = #{id}
+
     </select>
 
     <insert id="insertResume" parameterType="Resume" useGeneratedKeys="true" keyProperty="id">

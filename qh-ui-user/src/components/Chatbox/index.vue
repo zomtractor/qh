@@ -8,7 +8,7 @@
             :key="contact.id"
             :index="String(contact.id)"
         >
-          <el-avatar :src="contact.avatar" size="small" class="avatar" />
+          <image-preview :src="contact.avatar" size="small" class="avatar" />
           <span class="contact-name">{{ contact.name }}</span>
         </el-menu-item>
       </el-menu>
@@ -20,46 +20,51 @@
         <div
             v-for="msg in messages"
             :key="msg.id"
-            :class="['message-item', msg.poster_id === currentUser.id ? 'sent' : 'received']"
+            :class="['message-item', msg.posterId === currentUser.id ? 'sent' : 'received']"
         >
           <div class="bubble">
-            <template v-if="msg.content_type === 'text'">
+            <template v-if="msg.contentType === 'text'">
               {{ msg.content }}
             </template>
-            <template v-else-if="msg.content_type === 'image'">
-              <img :src="msg.content" class="msg-image" />
+            <template v-else-if="msg.contentType === 'image'">
+              <image-preview :src="msg.content" class="msg-image" />
             </template>
-            <template v-else-if="msg.content_type === 'file'">
-              <a :href="msg.content" target="_blank">下载附件</a>
+            <template v-else-if="msg.contentType === 'file'">
+              <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-download"
+                  @click="handleDownload(msg.content)"
+              >下载附件</el-button>
             </template>
           </div>
         </div>
       </div>
-
       <!-- 输入区域 -->
       <div class="input-area">
         <el-input
             type="textarea"
-            v-model="inputText"
+            v-model="input.text"
             placeholder="输入消息..."
             rows="2"
         />
         <div class="input-actions">
-          <el-upload
-              :action="uploadUrl"
-              :show-file-list="false"
-              :on-success="handleImageUpload"
-              accept="image/*"
+          <el-popover
+              placement="top-start"
+              width="200"
+              trigger="hover"
           >
-            <el-button icon="el-icon-picture" circle />
-          </el-upload>
-          <el-upload
-              :action="uploadUrl"
-              :show-file-list="false"
-              :on-success="handleFileUpload"
+            <image-upload :limit="1" v-model="input.image" @on-success="uploadImg" />
+            <el-button slot="reference" icon="el-icon-picture" circle />
+          </el-popover>
+          <el-popover
+              placement="top-start"
+              width="200"
+              trigger="hover"
           >
-            <el-button icon="el-icon-paperclip" circle />
-          </el-upload>
+            <file-upload :limit="1" v-model="input.file" @on-success="uploadFile" />
+            <el-button slot="reference" icon="el-icon-paperclip" circle/>
+          </el-popover>
           <el-button type="primary" @click="sendText">发送</el-button>
         </div>
       </div>
@@ -69,7 +74,8 @@
 
 <script>
 import {getCurrentUser} from "@/utils/local";
-
+import {listChats, listContact, postMsg} from "@/api/jobseeker/communicate";
+import {download} from "@/utils/request";
 export default {
   name: "Chatbox",
   data() {
@@ -78,77 +84,83 @@ export default {
         id: -1,
         name: "当前用户",
       },
-      contacts: [],
-      activeContactId: null,
-      messages: [],
-      inputText: "",
-      uploadUrl: "/api/upload", // 上传接口地址（请替换）
-    };
-  },
-  methods: {
-    async fetchContacts() {
-      // 模拟请求（实际应调接口）
-      if (this.contactType === "Resume") {
-        this.contacts = [
-          { id: 201, name: "张三", avatar: "https://via.placeholder.com/40" },
-          { id: 202, name: "李四", avatar: "https://via.placeholder.com/40" },
-        ];
-      } else {
-        this.contacts = [
-          { id: 301, name: "字节跳动", avatar: "https://via.placeholder.com/40" },
-          { id: 302, name: "腾讯", avatar: "https://via.placeholder.com/40" },
-        ];
-      }
-
-      if (this.contacts.length > 0) {
-        this.activeContactId = this.contacts[0].id;
-        this.fetchMessages();
-      }
-    },
-
-    fetchMessages() {
-      // 模拟聊天记录（实际应请求 /api/communicate/list?poster=...&receiver=...）
-      this.messages = [
+      input: {
+        text: "",
+        image: '',
+        file: '',
+      },
+      contacts: [
         {
           id: 1,
-          poster_id: this.currentUser.id,
-          receiver_id: this.activeContactId,
-          content: "你好，请问贵公司目前在招聘吗？",
-          content_type: "text",
+          name: "张三",
+          avatar: "https://via.placeholder.com/40",
         },
         {
           id: 2,
-          poster_id: this.activeContactId,
-          receiver_id: this.currentUser.id,
-          content: "在的，欢迎投递简历",
-          content_type: "text",
+          name: "李四",
+          avatar: "https://via.placeholder.com/40",
         },
-      ];
+        {
+          id: 3,
+          name: "王五",
+          avatar: "https://via.placeholder.com/40",
+        },
+        {
+          id: 4,
+          name: "赵六",
+          avatar: "https://via.placeholder.com/40",
+        }
+      ],
+      activeContactId: 1,
+      messages: [
+        {
+          id: 1,
+          posterId: 1,
+          receiverId: this.activeContactId,
+          content: "你好，请问贵公司目前在招聘吗？",
+          contentType: "text",
+        },
+        {
+          id: 2,
+          posterId: this.activeContactId,
+          receiverId: 1,
+          content: "在的，欢迎投递简历",
+          contentType: "text",
+        },
+      ],
+    };
+  },
+  methods: {
+    fetchContacts() {
+      listContact().then(resp=>{
+        if (resp.code === 200) {
+          this.contacts = resp.rows;
+          if(this.contacts.length>0) {
+            this.activeContactId = this.contacts[0].id;
+            this.fetchMessages(this.activeContactId);
+          }
+          console.log(this.contacts)
+        } else {
+          this.$message.error(resp.msg);
+        }
+      }).catch(err=>{
+        this.$message.error(err);
+      })
     },
 
-    sendText() {
-      if (!this.inputText.trim()) return;
-
-      const newMessage = {
-        id: Date.now(),
-        poster_id: this.currentUser.id,
-        receiver_id: this.activeContactId,
-        content: this.inputText,
-        content_type: "text",
-      };
-
-      // 模拟插入数据库
-      this.messages.push(newMessage);
-      this.inputText = "";
+    fetchMessages(refId) {
+      listChats(refId).then(resp=>{
+        if (resp.code === 200) {
+          this.messages = resp.rows;
+        } else {
+          this.$message.error(resp.msg);
+        }
+      }).catch(err=>{
+        this.$message.error(err);
+      })
     },
-
     handleSelect(contactId) {
-      this.activeContactId = Number(contactId);
-      this.fetchMessages();
-    },
-
-    handleImageUpload(response) {
-      this.sendMedia(response.url, "image");
+      this.fetchMessages(contactId);
     },
 
     handleFileUpload(response) {
@@ -157,14 +169,44 @@ export default {
 
     sendMedia(url, type) {
       const newMessage = {
-        id: Date.now(),
-        poster_id: this.currentUser.id,
-        receiver_id: this.activeContactId,
+        posterId: this.currentUser.id,
+        receiverId: this.activeContactId,
+        previousId: this.messages.length > 0 ? this.messages[this.messages.length - 1].id : -1,
         content: url,
-        content_type: type,
+        contentType: type,
       };
-      this.messages.push(newMessage);
+      postMsg(newMessage).then(resp=>{
+        if (resp.code === 200) {
+          this.$message.success("发送成功");
+          this.messages.push(newMessage);
+        } else {
+          this.$message.error(resp.msg);
+        }
+      }).catch(err=>{
+        this.$message.error(err);
+      })
     },
+    sendText() {
+      this.sendMedia(this.input.text, "text");
+    },
+    uploadImg(){
+      this.sendMedia(this.input.image, "image");
+    },
+    uploadFile(){
+      this.sendMedia(this.input.file, "file");
+    },
+    handleDownload(url) {
+      var name = url.substring(url.lastIndexOf("/") + 1, url.length);
+      // var suffix = url.substring(url.lastIndexOf("."), url.length);
+      // var name = url.substring(url.lastIndexOf("/") + 1, url.length - suffix.length);
+      const a = document.createElement('a')
+      a.setAttribute('download', name)
+      a.setAttribute('target', '_blank')
+      a.setAttribute('href', '/dev-api'+url)
+      a.setAttribute('content-type', 'application/octet-stream')
+      a.style.display = 'none'
+      a.click()
+    }
   },
   mounted() {
     this.currentUser = getCurrentUser();
@@ -242,8 +284,14 @@ export default {
 }
 .avatar {
   margin-right: 8px;
+  width: 40px;
+  height: 40px;
 }
 .contact-name {
   vertical-align: middle;
+}
+.hyper-link {
+  color: #409eff;
+  text-decoration: none;
 }
 </style>

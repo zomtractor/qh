@@ -105,6 +105,6 @@
         <include refid="selectCommunicateVo"/>
         where (poster_id = #{id1} and receiver_id = #{id2}) or
               (poster_id = #{id2} and receiver_id = #{id1})
-        order by create_time desc
+        order by create_time asc
     </select>
 </mapper>
