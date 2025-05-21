@@ -45,7 +45,7 @@
           @click="handleDelete"
         >删除</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getJobList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
@@ -105,7 +105,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getJobList"
     />
 
     <!-- 添加或修改岗位对话框 -->
@@ -115,10 +115,10 @@
           <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="岗位职责" prop="description">
-          <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.description" type="textarea" placeholder="请输入岗位职责" />
         </el-form-item>
-        <el-form-item label="todo" prop="salaryDesc">
-          <el-input v-model="form.salaryDesc" placeholder="请输入todo" />
+        <el-form-item label="薪资描述" prop="salaryDesc">
+          <el-input v-model="form.salaryDesc" placeholder="请输入薪资描述" />
         </el-form-item>
         <el-form-item label="工作地点" prop="location">
           <el-input v-model="form.location" placeholder="请输入工作地点" />
@@ -127,47 +127,18 @@
           <el-input v-model="form.requirement" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="分类" prop="categoryIds">
-          <el-autocomplete
-            class="inline-input"
-            v-model="searchCategory"
-            :fetch-suggestions="queryCategory"
-            placeholder="请输入内容"
-            @select="handleCategorySelect"
-            @change="handleCategoryEntered"
-          ></el-autocomplete>
-          <el-tag
-            v-for="tag in form.categoryList"
-            closable
-            :disable-transitions="true"
-            :key="tag"
-            type="info"
-            @close="closeCategory(tag)"
-          >
-            <span class="el-select__tags-text">{{ tag.name }}</span>
-          </el-tag>
+          <el-select v-model="form.categoryList" placeholder="请选择分类" multiple clearable
+                     :loading="loading" @visible-change="getCategoryList" :style="{width: '100%'}" >
+            <el-option v-for="category in categoryList" :key="category.id" :label="category.name"
+                       :value="category.id"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="标签" prop="tagIds">
-          <el-autocomplete
-            class="inline-input"
-            v-model="searchTag"
-            :fetch-suggestions="queryTag"
-            placeholder="请输入内容"
-            @select="handleTagSelect"
-            @change="handleTagEntered"
-          ></el-autocomplete>
-          <el-tag
-            v-for="tag in form.tagList"
-            closable
-            :disable-transitions="true"
-            :key="tag"
-            type="info"
-            @close="closeTag(tag)"
-          >
-            <span class="el-select__tags-text">{{ tag.name }}</span>
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="岗位热度" prop="popularity">
-          <el-input v-model="form.popularity" placeholder="请输入岗位热度" />
+          <el-select v-model="form.tagList" placeholder="请选择标签" multiple clearable
+                     :loading="loading" @visible-change="getTagList" :style="{width: '100%'}" >
+            <el-option v-for="tag in tagList" :key="tag.id" :label="tag.name"
+                       :value="tag.id"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -180,8 +151,10 @@
 
 <script>
 import { listJob, getJob, delJob, addJob, updateJob } from "@/api/etp/job";
-import {listTag,addTag} from "@/api/etp/tag";
-import {listCategory,addCategory} from "@/api/etp/category";
+import { listTag, addTag } from "@/api/etp/tag";
+import {listCategory, addCategory, updateCategory} from "@/api/etp/category";
+import { getCurrentUser } from "@/utils/local";
+
 export default {
   name: "Job",
   data() {
@@ -200,6 +173,10 @@ export default {
       total: 0,
       // 岗位表格数据
       jobList: [],
+      // 分类列表
+      categoryList: [],
+      // 标签列表
+      tagList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -209,7 +186,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        etpId: null,
+        etpId: getCurrentUser().id,
         description: null,
       },
       // 表单参数
@@ -222,19 +199,17 @@ export default {
         description: [
           { required: true, message: "岗位职责不能为空", trigger: "blur" }
         ],
-      },
-
-      searchEtp: null,
-      searchTag: null,
-      searchCategory: null,
+      }
     };
   },
   created() {
-    this.getList();
+    this.getJobList();
+    this.getCategoryList();
+    this.getTagList();
   },
   methods: {
     /** 查询岗位列表 */
-    getList() {
+    getJobList() {
       this.loading = true;
       listJob(this.queryParams).then(response => {
         this.jobList = response.rows;
@@ -242,12 +217,28 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
+    /** 查询分类列表 */
+    getCategoryList() {
+      this.loading = true;
+      listCategory({}).then(response => {
+        this.categoryList = response.rows;
+        this.loading = false;
+      });
+    },
+    /** 查询标签列表 */
+    getTagList() {
+      this.loading = true;
+      listTag({}).then(response => {
+        this.tagList = response.rows;
+        this.loading = false;
+      });
+    },
+    /** 取消 */
     cancel() {
       this.open = false;
       this.reset();
     },
-    // 表单重置
+    /** 表单重置 */
     reset() {
       this.form = {
         id: null,
@@ -257,8 +248,10 @@ export default {
         location: null,
         requirement: null,
         etpId: null,
-        categoryIds: null,
-        tagIds: null,
+        categoryList: [],
+        categoryIds: "",
+        tagList: [],
+        tagIds: "",
         popularity: null,
         createTime: null,
         updateTime: null,
@@ -270,10 +263,7 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      if(!this.searchEtp) {
-        this.queryParams.etpId = null;
-      }
-      this.getList();
+      this.getJobList();
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -289,8 +279,6 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.tagList=[];
-      this.categoryList=[];
       this.open = true;
       this.title = "添加岗位";
     },
@@ -300,6 +288,8 @@ export default {
       const id = row.id || this.ids
       getJob(id).then(response => {
         this.form = response.data;
+        this.form.categoryList = this.form.categoryIds.split(",").map(item => parseInt(item));
+        this.form.tagList = this.form.tagIds.split(",").map(item => parseInt(item));
         this.open = true;
         this.title = "修改岗位";
       });
@@ -308,19 +298,20 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          this.form.categoryIds = this.form.categoryList.map(item => item.id).join(",");
-          this.form.tagIds = this.form.tagList.map(item => item.id).join(",");
+          this.form.categoryIds = this.form.categoryList.join(",");
+          this.form.tagIds = this.form.tagList.join(",");
+          this.form.etpId = getCurrentUser().id;
           if (this.form.id != null) {
             updateJob(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
-              this.getList();
+              this.getJobList();
             });
           } else {
             addJob(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
-              this.getList();
+              this.getJobList();
             });
           }
         }
@@ -332,105 +323,10 @@ export default {
       this.$modal.confirm('是否确认删除岗位编号为"' + ids + '"的数据项？').then(function() {
         return delJob(ids);
       }).then(() => {
-        this.getList();
+        this.getJobList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('enterprise/job/export', {
-        ...this.queryParams
-      }, `job_${new Date().getTime()}.xlsx`)
-    },
-    handleEtpSelect(item){
-      this.queryParams.etpId = item.value;
-      this.searchEtp = item.name;
-    },
-    handleClose(list,tag) {
-      list.splice(this.dynamicTags.indexOf(tag), 1);
-    },
-    handleInputTagsConfirm() {
-      let inputValue;
-      if (inputValue) {
-        this.form.tagList.push(inputValue);
-      }
-      this.inputVisible = false;
-    },
-    queryCategory(queryString, cb) {
-      listCategory({name:queryString}).then(response => {
-        // list response.rows and get etpNames
-        let data = response.rows.map(item => {
-          return {
-            value: item.name,
-            category: item
-          }
-        });
-        cb(data);
-      });
-    },
-    handleCategorySelect(item){
-      if (item.name && !this.form.categoryList.some(tag => tag.name === item.name)) {
-        this.form.categoryList.push(item.category);
-      }
-      this.searchCategory = ''
-
-    },
-    handleCategoryEntered(itemName){
-      if (itemName && !this.form.categoryList.some(tag => tag.name === itemName)) {
-        listCategory({name:itemName}).then(response => {
-          if (response.rows.length > 0) {
-            this.form.categoryList.push(response.rows[0]);
-          } else {
-            addCategory({name:itemName}).then(response => {
-              this.form.categoryList.push(response.data);
-            });
-          }
-        });
-      }
-      this.searchCategory = ''
-
-    },
-    closeCategory(tag) {
-      this.form.categoryList.splice(this.form.categoryList.indexOf(tag), 1);
-    },
-    queryTag(queryString, cb) {
-      listTag({name:queryString}).then(response => {
-        // list response.rows and get etpNames
-        let data = response.rows.map(item => {
-          return {
-            value: item.name,
-            tag: item
-          }
-        });
-        cb(data);
-      });
-    },
-    handleTagSelect(item){
-      if (item.name && !this.form.tagList.some(tag => tag.name === item.name)) {
-        this.form.tagList.push(item.tag);
-      }
-      this.searchTag = ''
-
-    },
-    handleTagEntered(itemName){
-      if (itemName && !this.form.tagList.some(tag => tag.name === itemName)) {
-        listTag({name:itemName}).then(response => {
-          if (response.rows.length > 0) {
-            this.form.tagList.push(response.rows[0]);
-          } else {
-            addTag({name:itemName}).then(response => {
-              this.form.tagList.push(response.data);
-            });
-          }
-        });
-      }
-      this.searchTag = ''
-
-    },
-    closeTag(tag) {
-      this.form.tagList.splice(this.form.tagList.indexOf(tag), 1);
-    },
+    }
   },
-
 };
 </script>
