@@ -90,43 +90,9 @@ export default {
         file: '',
       },
       contacts: [
-        {
-          id: 1,
-          name: "张三",
-          avatar: "https://via.placeholder.com/40",
-        },
-        {
-          id: 2,
-          name: "李四",
-          avatar: "https://via.placeholder.com/40",
-        },
-        {
-          id: 3,
-          name: "王五",
-          avatar: "https://via.placeholder.com/40",
-        },
-        {
-          id: 4,
-          name: "赵六",
-          avatar: "https://via.placeholder.com/40",
-        }
       ],
       activeContactId: 1,
       messages: [
-        {
-          id: 1,
-          posterId: 1,
-          receiverId: this.activeContactId,
-          content: "你好，请问贵公司目前在招聘吗？",
-          contentType: "text",
-        },
-        {
-          id: 2,
-          posterId: this.activeContactId,
-          receiverId: 1,
-          content: "在的，欢迎投递简历",
-          contentType: "text",
-        },
       ],
     };
   },

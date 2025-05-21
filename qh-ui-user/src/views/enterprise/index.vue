@@ -42,7 +42,7 @@
         <div class="user-info">
 
           <el-dropdown @command="logout">
-            <image-preview :src="currentUser.avatarFileId" width="32px" height="32px" />
+            <image-preview :src="currentUser.avatar" width="32px" height="32px" />
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -183,17 +183,6 @@ export default {
   font-weight: 500;
 }
 
-/* 主内容区域 */
-.main-content {
-  background-color: #f4f6f8;
-  padding: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 60px);
-  box-sizing: border-box;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
 
 .user-info {
   display: flex;
@@ -205,4 +194,5 @@ export default {
   margin-right: 20px;
   color: #333;
 }
+
 </style>
