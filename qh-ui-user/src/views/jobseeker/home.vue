@@ -49,7 +49,7 @@
     <div class="job-list">
       <div class="job-card" v-for="(job, index) in jobs" :key="index">
       <div class="job-header">
-           <div class="job-name">{{ job.name }}</div>
+           <div class="job-name">职位名称：{{ job.name }}</div>
            <div class="job-popularity">热门度：{{ job.popularity }}</div>
       </div>
       <div class="job-info">
@@ -162,20 +162,20 @@ export default {
 }
 
 .job-list {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
-}
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
 
-.job-card {
-  margin-bottom: 24px;
-  padding: 24px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
+    .job-card {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
 
 .job-card:hover {
   transform: translateY(-2px);
@@ -288,6 +288,7 @@ export default {
 .job-requirement {
   margin-bottom: 20px;
   line-height: 1.6;
+  text-align: left;
 }
 
 .description-title,
