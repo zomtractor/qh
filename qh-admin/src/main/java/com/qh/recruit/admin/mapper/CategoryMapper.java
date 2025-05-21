@@ -3,6 +3,7 @@ package com.qh.recruit.admin.mapper;
 import java.util.List;
 import com.qh.recruit.admin.domain.Category;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import javax.management.MXBean;
 
@@ -62,5 +63,5 @@ public interface CategoryMapper
      */
     public int deleteCategoryByIds(Long[] ids);
 
-    List<Category> selectCategoryByIds(String categoryIds);
+    List<Category> selectCategoryByIds(@Param("ids") String ids);
 }
