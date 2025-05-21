@@ -58,4 +58,6 @@ public interface CommunicateMapper
      * @return 结果
      */
     public int deleteCommunicateByIds(Long[] ids);
+
+    public int selectListByPeerId(Long id1, Long id2);
 }

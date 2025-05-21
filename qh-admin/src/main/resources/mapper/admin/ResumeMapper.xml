@@ -40,6 +40,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="status"    column="status"    />
         <result property="version"    column="version"    />
     </resultMap>
+    <resultMap type="LoginDto" id="LoginDto">
+        <result property="id"    column="id"    />
+        <result property="refId"    column="ref_id"    />
+        <result property="username"    column=""    />
+        <result property="name"    column="name"    />
+        <result property="avatar"    column="avatar_file_id"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+    </resultMap>
 
     <sql id="selectResumeVo">
         select id, user_id, avatar_file_id, name, gender, age, education, school, phone, email, job_intention, attachment_file_ids, create_time, update_time, status, version from tb_resume
@@ -69,6 +78,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectResumeByUserId" resultMap="ResumeResultDto">
         <include refid="selectResumeDto"/>
         where r.user_id = #{userId}
+    </select>
+    <select id="selectResumeChatted" resultMap="LoginDto">
+        SELECT r.id as ref_id,r.name,r.avatar_file_id,r.phone,r.email,u.username,u.id
+        FROM tb_communicate c
+                 JOIN tb_resume r ON r.user_id = #{id} AND (r.user_id = c.receiver_id OR r.user_id = c.poster_id)
+                 LEFT JOIN tb_user u ON r.user_id = u.id
     </select>
 
     <insert id="insertResume" parameterType="Resume" useGeneratedKeys="true" keyProperty="id">

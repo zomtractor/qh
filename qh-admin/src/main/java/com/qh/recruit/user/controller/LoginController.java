@@ -1,6 +1,7 @@
 // LoginController.java
 package com.qh.recruit.user.controller;
 
+import com.qh.recruit.common.core.controller.BaseController;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.user.domain.NLoginForm;
 import com.qh.recruit.user.service.LoginService;
@@ -10,7 +11,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/login")
-public class LoginController {
+public class LoginController extends BaseController {
 
     @Resource
     private LoginService loginService;
@@ -29,7 +30,7 @@ public class LoginController {
     public AjaxResult sendRegisterEmail(@RequestBody NLoginForm loginForm) {
         return loginService.sendRegisterEmail(loginForm.getRole(),loginForm.getEmail(),loginForm.getCode(), loginForm.getUuid());
     }
-    @PostMapping("tokenLogin")
+    @PostMapping("/tokenLogin")
     public AjaxResult tokenLogin(String token) {
         return loginService.tokenLogin(token);
     }

@@ -17,6 +17,21 @@
         <result property="version"    column="version"    />
     </resultMap>
 
+    <resultMap type="CommunicateDto" id="CommunicateResultDto">
+        <result property="id"    column="id"    />
+        <result property="posterId"    column="poster_id"    />
+        <result property="posterName"    column="poster_id"    />
+        <result property="receiverId"    column="receiver_id"    />
+        <result property="receiverName"    column="receiver_id"    />
+        <result property="previousId"    column="previous_id"    />
+        <result property="content"    column="content"    />
+        <result property="contentType"    column="content_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
     <sql id="selectCommunicateVo">
         select id, poster_id, receiver_id, previous_id, content, content_type, create_time, update_time, status, version from tb_communicate
     </sql>
@@ -86,4 +101,10 @@
             #{id}
         </foreach>
     </delete>
+    <select id="selectListByPeerId" resultMap="CommunicateResult">
+        <include refid="selectCommunicateVo"/>
+        where (poster_id = #{id1} and receiver_id = #{id2}) or
+              (poster_id = #{id2} and receiver_id = #{id1})
+        order by create_time desc
+    </select>
 </mapper>
