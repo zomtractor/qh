@@ -1,25 +1,31 @@
 <template>
-  <div>
-    message
+  <div class="message-container">
+    <Chatbox
+    />
   </div>
 </template>
 
 <script>
+
+import Chatbox from "@/components/Chatbox/index.vue";
+
 export default {
-  name: 'Message',
+  name: "Message",
+  components: {
+    Chatbox,
+  },
   data() {
     return {
-
-    }
+    };
   },
-  methods: {
-
+  computed: {
   },
-  created() {
-  }
-}
+};
 </script>
 
-<style scoped lang="scss">
-
+<style scoped>
+.message-container {
+  height: 100%;
+  padding: 10px;
+}
 </style>

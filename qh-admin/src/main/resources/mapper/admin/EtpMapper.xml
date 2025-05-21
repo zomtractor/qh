@@ -40,6 +40,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="version"    column="version"    />
     </resultMap>
 
+    <resultMap type="LoginDto" id="LoginDto">
+        <result property="id"    column="id"    />
+        <result property="refId"    column="ref_id"    />
+        <result property="username"    column=""    />
+        <result property="name"    column="name"    />
+        <result property="avatar"    column="logo_file_id"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+    </resultMap>
     <sql id="selectEtpVo">
         select id, user_id, logo_file_id, name, description, legal_person, address, phone, email, website, popularity, create_time, update_time, status, version from tb_etp
     </sql>
@@ -60,7 +69,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="popularity != null "> and popularity = #{popularity}</if>
         </where>
     </select>
-    
+
+    <select id="selectEtpChatted" resultMap="LoginDto">
+        SELECT e.id as ref_id,e.name,e.logo_file_id,e.phone,e.email,u.username,u.id
+        FROM tb_communicate c
+                 JOIN tb_etp e ON e.user_id = #{id} AND (e.user_id = c.receiver_id OR e.user_id = c.poster_id)
+                 LEFT JOIN tb_user u ON e.user_id = u.id
+    </select>
+
     <select id="selectEtpById" parameterType="Long" resultMap="EtpResultDto">
         <include refid="selectEtpDto"/>
         where e.id = #{id}

@@ -3,6 +3,7 @@ package com.qh.recruit.admin.mapper;
 import java.util.List;
 import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.domain.dto.ResumeDto;
+import com.qh.recruit.user.domain.LoginDto;
 
 /**
  * 简历Mapper接口
@@ -61,4 +62,6 @@ public interface ResumeMapper
     public int deleteResumeByIds(Long[] ids);
 
     public ResumeDto selectResumeByUserId(Long userId);
+
+    public List<LoginDto> selectResumeChatted(Long userId);
 }

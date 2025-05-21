@@ -2,6 +2,9 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Etp;
+import com.qh.recruit.admin.domain.dto.EtpDto;
+import com.qh.recruit.admin.domain.dto.ResumeDto;
+import com.qh.recruit.user.domain.LoginDto;
 
 /**
  * 企业管理Mapper接口
@@ -60,4 +63,6 @@ public interface EtpMapper
     public int deleteEtpByIds(Long[] ids);
 
     Etp selectEtpByUserId(Long id);
+
+    public List<LoginDto> selectEtpChatted(Long userId);
 }
