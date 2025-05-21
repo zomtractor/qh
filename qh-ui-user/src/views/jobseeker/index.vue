@@ -13,7 +13,9 @@
               active-text-color="#ffd04b"
               @select="changeMenu"
           >
-            <el-menu-item index="Home">首页</el-menu-item>
+            <el-menu-item index="Home" class="full-width-menu-item">
+                          <el-button type="primary" class="full-width-button" @click="handleNavigateToHome">首页</el-button>
+            </el-menu-item>
             <el-menu-item index="Recommend">推荐</el-menu-item>
             <el-menu-item index="Message">消息</el-menu-item>
             <el-menu-item index="Resume">简历</el-menu-item>
@@ -44,6 +46,7 @@ import Home from "./home.vue";
 import Recommend from "./recommend.vue";
 import Message from "./message.vue";
 import Resume from "./resume.vue";
+import { navigateToHome } from '@/api/home/home'; // 导入首页请求方法
 import {getToken, removeToken} from "@/utils/auth";
 import {tokenLogin} from "@/api/login";
 import {setCurrentUser} from "@/utils/local";
@@ -109,6 +112,10 @@ export default {
       }).catch(() => {
         this.$message.info('取消登出')
       });
+    },
+    handleNavigateToHome() {
+          this.changeMenu('Home'); // 切换到首页
+          navigateToHome(); // 发送首页数据请求
     }
   },
 };
@@ -156,5 +163,39 @@ export default {
   align-items: center;
   gap: 8px;
   color: white;
+}
+
+.full-width-menu-item {
+  padding: 0; /* 移除内边距 */
+}
+
+.full-width-button {
+  width: 100%; /* 按钮宽度占满父容器 */
+  height: 100%; /* 按钮高度占满父容器 */
+  border-radius: 0; /* 移除圆角 */
+  background-color: transparent; /* 背景透明 */
+  border: none; /* 移除边框 */
+  color: #fff; /* 文字颜色与菜单项一致 */
+  font-size: 14px; /* 字体大小与菜单项一致 */
+  padding: 0 20px; /* 内边距与菜单项一致 */
+  text-align: left; /* 文字左对齐 */
+}
+
+.full-width-button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* 鼠标悬停背景色 */
+}
+
+.full-width-button:focus {
+  outline: none; /* 移除焦点边框 */
+}
+.el-dropdown-menu {
+  min-width: 120px;
+  text-align: right; /* 文字右对齐 */
+  padding-right: 16px; /* 增加右边距 */
+}
+
+.el-dropdown-menu__item {
+  display: flex;
+  justify-content: flex-end; /* 内容右对齐 */
 }
 </style>
