@@ -64,27 +64,17 @@
           <div class="location">{{ job.location }}</div>
         </div>
         <div class="actions">
-          <el-button type="primary" @click="handleCommunicate(job.id)">沟通</el-button>
-          <el-button type="primary" @click="handleSubmitResume(job.id)">投递简历</el-button>
+          <el-button type="primary" @click="handleCommunicate">沟通</el-button>
+          <el-button type="primary" @click="handleSubmitResume">投递简历</el-button>
         </div>
       </div>
     </div>
 
-    <!-- 分页控件 -->
-    <div class="pagination">
-      <el-pagination
-        layout="prev, pager, next"
-        :total="total"
-        :page-size="pageSize"
-        :current-page="currentPage"
-        @current-change="handlePageChange"
-      />
-    </div>
   </div>
 </template>
 
 <script>
-import { search, confirmFilters, getPage, submitResume, communicate } from '@/api/home/home'
+import { search, confirmFilters,submitResume, navigateToHome } from '@/api/home/home'
 
 export default {
   name: 'Home',
@@ -100,7 +90,7 @@ export default {
         '昆明', '贵阳', '南宁', '太原', '石家庄', '兰州', '西宁', '银川', '乌鲁木齐', '海口'
       ],
       salaries: [
-        '5k以下', '5-10k', '10-15k', '15-20k', '20-25k', '25k以上'
+        '5k以下', '5-10k', '10-15k', '15k以上'
       ],
       industries: [
         '国企', '外企', '民企', '事业单位', '银行', '央企'
@@ -147,9 +137,12 @@ export default {
         }
       ],
       total: 68, // 总条数
-      pageSize: 10, // 每页显示条数
+      pageSize: 5, // 每页显示条数
       currentPage: 1 // 当前页码
     }
+  },
+  created() {
+    navigateToHome(); // 进入页面时发送请求
   },
   methods: {
     handleSearch() {
@@ -166,27 +159,16 @@ export default {
         industry: this.industry
       };
       confirmFilters(params).then(res => {
-        this.handleSearch();
+
       });
     },
-    handleCommunicate(jobId) {
-      communicate(jobId).then(res => {
+    handleCommunicate() {
+      this.$router.push({path: '/communicate'});
         // 处理沟通结果
-      });
     },
-    handlePageChange(page) {
-      this.currentPage = page;
-      getPage({
-        page: this.currentPage,
-        pageSize: this.pageSize
-      }).then(res => {
-        this.jobs = res.data;
-      });
-    },
-    handleSubmitResume(jobId) {
-      submitResume(jobId).then(res => {
+    handleSubmitResume() {
+      this.$router.push({path: '/communicate'});
         // 处理投递简历结果
-      });
     }
   }
 }
