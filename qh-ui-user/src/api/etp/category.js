@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询分类管理列表
 export function listCategory(query) {
   return request({
-    url: '/admin/category/list',
+    url: '/etp/category/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listCategory(query) {
 // 查询分类管理详细
 export function getCategory(id) {
   return request({
-    url: '/admin/category/' + id,
+    url: '/etp/category/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getCategory(id) {
 // 新增分类管理
 export function addCategory(data) {
   return request({
-    url: '/admin/category',
+    url: '/etp/category',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addCategory(data) {
 // 修改分类管理
 export function updateCategory(data) {
   return request({
-    url: '/admin/category',
+    url: '/etp/category',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateCategory(data) {
 // 删除分类管理
 export function delCategory(id) {
   return request({
-    url: '/admin/category/' + id,
+    url: '/etp/category/' + id,
     method: 'delete'
   })
 }

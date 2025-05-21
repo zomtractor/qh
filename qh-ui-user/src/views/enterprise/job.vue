@@ -179,9 +179,9 @@
 </template>
 
 <script>
-import { listJob, getJob, delJob, addJob, updateJob } from "@/api/common/job";
-import {listTag,addTag} from "@/api/common/tag";
-import {listCategory,addCategory} from "@/api/common/category";
+import { listJob, getJob, delJob, addJob, updateJob } from "@/api/etp/job";
+import {listTag,addTag} from "@/api/etp/tag";
+import {listCategory,addCategory} from "@/api/etp/category";
 export default {
   name: "Job",
   data() {
