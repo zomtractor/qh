@@ -43,7 +43,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="LoginDto" id="LoginDto">
         <result property="id"    column="id"    />
         <result property="refId"    column="ref_id"    />
-        <result property="username"    column=""    />
+        <result property="username"    column="username"    />
+        <result property="userType"    column="user_type"    />
         <result property="name"    column="name"    />
         <result property="avatar"    column="logo_file_id"    />
         <result property="phone"    column="phone"    />
@@ -71,10 +72,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectEtpChatted" resultMap="LoginDto">
-        SELECT e.id as ref_id,e.name,e.logo_file_id,e.phone,e.email,u.username,u.id
+        SELECT distinct e.id as ref_id,e.name,e.logo_file_id,e.phone,e.email,u.username,u.id, u.user_type
         FROM tb_communicate c
-                 JOIN tb_etp e ON e.user_id = #{id} AND (e.user_id = c.receiver_id OR e.user_id = c.poster_id)
-                 LEFT JOIN tb_user u ON e.user_id = u.id
+                 LEFT JOIN tb_etp e ON e.user_id = c.receiver_id
+                 LEFT JOIN tb_user u ON u.id = e.user_id
+        where c.poster_id = #{id}
+
     </select>
 
     <select id="selectEtpById" parameterType="Long" resultMap="EtpResultDto">

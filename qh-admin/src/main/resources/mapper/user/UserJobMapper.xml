@@ -29,6 +29,6 @@
                category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
                update_time AS updateTime, status, version
         FROM tb_job
-        where location = #{arg0} and category_ids = #{arg1} and salary_desc between #{arg2} and #{arg3}
+        where location = #{arg0} and category_ids LIKE CONCAT('%', #{arg1}, '%') and salary_desc between #{arg2} and #{arg3}
     </select>
 </mapper>

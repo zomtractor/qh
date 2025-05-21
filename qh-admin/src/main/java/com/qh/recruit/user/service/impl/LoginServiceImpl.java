@@ -151,6 +151,7 @@ public class LoginServiceImpl implements LoginService {
                 return AjaxResult.error("用户对应信息不存在");
             }
             dto.setRefId(resume.getId());
+            dto.setAvatar(resume.getAvatarFileId());
             dto.setName(resume.getName());
             dto.setPhone(resume.getPhone());
             dto.setEmail(resume.getEmail());
@@ -163,6 +164,7 @@ public class LoginServiceImpl implements LoginService {
             dto.setName(etp.getName());
             dto.setPhone(etp.getPhone());
             dto.setEmail(etp.getEmail());
+            dto.setAvatar(etp.getLogoFileId());
 
         }
         return AjaxResult.success("登录成功",dto);

@@ -1,6 +1,7 @@
 package com.qh.recruit.user.domain;
 
 import com.qh.recruit.admin.domain.Job;
+import com.qh.recruit.admin.domain.dto.JobDto;
 import lombok.Data;
 
 /**
@@ -13,10 +14,12 @@ public class JobScore {
     /**
      * 职位信息
      */
-    private Job job;
+    private UserJob UserJob;
     
     /**
      * 匹配得分
      */
     private double score;
+
+    private Integer total;
 }

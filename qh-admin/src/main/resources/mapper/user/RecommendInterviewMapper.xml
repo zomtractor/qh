@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qh.recruit.user.mapper.RecommendInterviewMapper">
+
+    <select id="matchCount" resultType="java.lang.Long" >
+        select count(1)
+        from qh.tb_interview as i,qh.tb_resume as r
+        where i.job_id = #{arg0} and i.user_id = r.user_id and r.job_intention like concat('%', #{arg1}, '%')
+    </select>
+</mapper>
