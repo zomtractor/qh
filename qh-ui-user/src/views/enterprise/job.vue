@@ -9,6 +9,20 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="分类" prop="categoryIds">
+        <el-select v-model="queryCategoryList" placeholder="请选择分类" multiple
+                   :loading="loading" @visible-change="getCategoryList" :style="{width: '100%'}" >
+          <el-option v-for="category in categoryList" :key="category.id" :label="category.name"
+                     :value="category.id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="标签" prop="tagIds">
+        <el-select v-model="queryTagList" placeholder="请选择标签" multiple
+                   :loading="loading" @visible-change="getTagList" :style="{width: '100%'}" >
+          <el-option v-for="tag in tagList" :key="tag.id" :label="tag.name"
+                     :value="tag.id"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -53,7 +67,7 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="岗位名称" align="center" prop="name" />
       <el-table-column label="岗位职责" align="center" prop="description" />
-      <el-table-column label="todo" align="center" prop="salaryDesc" />
+      <el-table-column label="薪资描述" align="center" prop="salaryDesc" />
       <el-table-column label="工作地点" align="center" prop="location" />
       <el-table-column label="要求条件" align="center" prop="requirement" />
       <el-table-column label="企业名称" align="center" prop="etpId" />
@@ -127,14 +141,14 @@
           <el-input v-model="form.requirement" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="分类" prop="categoryIds">
-          <el-select v-model="form.categoryList" placeholder="请选择分类" multiple clearable
+          <el-select v-model="form.categoryList" placeholder="请选择分类" multiple
                      :loading="loading" @visible-change="getCategoryList" :style="{width: '100%'}" >
             <el-option v-for="category in categoryList" :key="category.id" :label="category.name"
                        :value="category.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="标签" prop="tagIds">
-          <el-select v-model="form.tagList" placeholder="请选择标签" multiple clearable
+          <el-select v-model="form.tagList" placeholder="请选择标签" multiple
                      :loading="loading" @visible-change="getTagList" :style="{width: '100%'}" >
             <el-option v-for="tag in tagList" :key="tag.id" :label="tag.name"
                        :value="tag.id"></el-option>
@@ -152,7 +166,7 @@
 <script>
 import { listJob, getJob, delJob, addJob, updateJob } from "@/api/etp/job";
 import { listTag, addTag } from "@/api/etp/tag";
-import {listCategory, addCategory, updateCategory} from "@/api/etp/category";
+import { listCategory, addCategory, updateCategory } from "@/api/etp/category";
 import { getCurrentUser } from "@/utils/local";
 
 export default {
@@ -188,7 +202,11 @@ export default {
         name: null,
         etpId: getCurrentUser().id,
         description: null,
+        categoryIds: null,
+        tagIds: null,
       },
+      queryCategoryList: [],
+      queryTagList: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -211,6 +229,8 @@ export default {
     /** 查询岗位列表 */
     getJobList() {
       this.loading = true;
+      this.queryParams.categoryIds = this.queryCategoryList.join(",");
+      this.queryParams.tagIds = this.queryTagList.join(",");
       listJob(this.queryParams).then(response => {
         this.jobList = response.rows;
         this.total = response.total;
@@ -268,6 +288,8 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
+      this.queryCategoryList = [];
+      this.queryTagList = [];
       this.handleQuery();
     },
     // 多选框选中数据
