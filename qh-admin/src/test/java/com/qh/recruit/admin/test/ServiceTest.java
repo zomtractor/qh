@@ -5,6 +5,7 @@ import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.domain.dto.JobDto;
 import com.qh.recruit.admin.mapper.ResumeMapper;
 import com.qh.recruit.admin.service.IJobService;
+import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.domain.model.LoginUser;
 import com.qh.recruit.user.domain.JobRecommendQuery;
 
@@ -55,6 +56,15 @@ public class ServiceTest {
         Resume resume1 = resumeMapper.selectResumeById(1L);
         //System.out.println(resume1);
         System.out.println(resume);
+
+    }
+
+
+    @Test
+    public void test2() {
+//        AjaxResult.success(resumeMapper.selectResumeByUserId(userId));
+        //System.out.println(resume1);
+        System.out.println(resumeMapper.selectResumeByUserId(1L));
 
     }
 

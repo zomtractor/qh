@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.recruit.user.mapper.ResumeUserMapper">
+
+    <select id="selectUserInfoByUserId" resultType="ResumeJob">
+        SELECT name, gender, age, education, school, phone, email,
+               job_intention As jobIntention
+        FROM tb_resume
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateResumeInfo">
+        UPDATE tb_resume
+        SET name = #{name},gender = #{gender},age = #{age},education = #{education},school = #{school},job_intention = #{jobIntention},phone = #{phone},email = #{email}
+        WHERE user_id = #{userId}
+    </update>
+
+
+    <select id="selectInterviewInfoByUserIdAndStatus" resultType="Interview">
+        SELECT job_id AS jobId,etp_id AS etpId,message
+        FROM tb_interview
+        WHERE user_id = #{userId} AND interview_status = #{interviewStatus}
+    </select>
+
+    <select id="selectJobInfoByJobId" resultType="Job">
+        SELECT name,description,salary_desc AS salaryDesc,location,requirement,id,etp_id AS etpId
+        FROM tb_job
+        WHERE id in
+        <choose>
+            <!-- 处理 jobIds 为空的情况 -->
+            <when test="jobIds != null and jobIds.size() > 0">
+                <foreach item="jobId" collection="jobIds" open="(" separator="," close=")">
+                    #{jobId}
+                </foreach>
+            </when>
+            <!-- 空集合时返回无结果 -->
+            <otherwise>
+                (NULL)
+            </otherwise>
+        </choose>
+    </select>
+
+
+</mapper>
