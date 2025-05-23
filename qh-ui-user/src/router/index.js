@@ -39,7 +39,7 @@ const routes = [
   },
   {
     path: '/communicate',
-    component: () => import('../views/jobseeker/communicate')
+    component: () => import('../components/Chatbox/index')
   },
 ]
 
