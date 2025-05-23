@@ -1,6 +1,8 @@
 package com.qh.recruit.admin.service.impl;
 
 import java.util.List;
+
+import com.qh.recruit.admin.domain.dto.InterviewDto;
 import com.qh.recruit.common.utils.DateUtils;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,12 @@ public class InterviewServiceImpl implements IInterviewService
     public List<Interview> selectInterviewList(Interview interview)
     {
         return interviewMapper.selectInterviewList(interview);
+    }
+
+    @Override
+    public List<InterviewDto> selectInterviewDtoList(InterviewDto interview)
+    {
+        return interviewMapper.selectInterviewDtoList(interview);
     }
 
     /**

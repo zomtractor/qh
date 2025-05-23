@@ -189,7 +189,6 @@ export default {
   padding: 40px;
   display: flex;
   justify-content: center;
-  align-items: center;
   min-height: calc(100vh - 60px);
   box-sizing: border-box;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

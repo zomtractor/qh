@@ -2,6 +2,7 @@ package com.qh.recruit.admin.service;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Interview;
+import com.qh.recruit.admin.domain.dto.InterviewDto;
 
 /**
  * 面试Service接口
@@ -26,6 +27,7 @@ public interface IInterviewService
      * @return 面试集合
      */
     public List<Interview> selectInterviewList(Interview interview);
+    public List<InterviewDto> selectInterviewDtoList(InterviewDto interview);
 
     /**
      * 新增面试

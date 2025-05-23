@@ -18,8 +18,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="version"    column="version"    />
     </resultMap>
 
+    <resultMap type="interviewDto" id="InterviewDtoResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="etpId"    column="etp_id"    />
+        <result property="interviewStatus"    column="interview_status"    />
+        <result property="message"    column="message"    />
+        <result property="time"    column="time"    />
+        <result property="jobName"    column="job_name"    />
+        <result property="userName"    column="user_name"    />
+        <result property="etpName"    column="etp_name"    />
+        <result property="jobSalary"    column="job_salary"    />
+        <result property="education"    column="education"    />
+    </resultMap>
+
     <sql id="selectInterviewVo">
         select id, user_id, job_id, etp_id, interview_status, message, time, create_time, update_time, status, version from tb_interview
+    </sql>
+    <sql id="selectInterviewDtoVo">
+        select a.id, a.user_id, a.job_id, a.etp_id, a.interview_status, a.message, a.time,b.name as job_name, d.username as user_name, c.name as etp_name, b.salary_desc as job_salary, e.education from tb_interview a, tb_job b, tb_etp c,tb_user d,tb_resume e
     </sql>
 
     <select id="selectInterviewList" parameterType="Interview" resultMap="InterviewResult">
@@ -28,6 +46,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="jobId != null "> and job_id = #{jobId}</if>
             <if test="etpId != null "> and etp_id = #{etpId}</if>
+        </where>
+    </select>
+
+    <select id="selectInterviewDtoList" parameterType="interviewDto" resultMap="InterviewDtoResult">
+        <include refid="selectInterviewDtoVo"/>
+        <where>
+             a.job_id = b.id and a.etp_id = c.id and a.user_id = d.id and a.user_id = e.user_id
+            <if test="userName != null  and userName != ''"> and d.username like concat('%', #{userName}, '%')</if>
+            <if test="jobName != null  and jobName != ''"> and b.name like concat('%', #{jobName}, '%')</if>
         </where>
     </select>
     

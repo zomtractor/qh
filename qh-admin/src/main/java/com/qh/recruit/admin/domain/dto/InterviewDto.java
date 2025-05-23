@@ -5,6 +5,26 @@ import com.qh.recruit.admin.domain.Interview;
 public class InterviewDto extends Interview {
     private static final long serialVersionUID = 1L;
 
+    private String jobSalary;
+    //学历
+    private String education;
+
+    public String getJobSalary() {
+        return jobSalary;
+    }
+
+    public void setJobSalary(String jobSalary) {
+        this.jobSalary = jobSalary;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education;
+    }
+
     /** 用户名 */
     private String userName;
 
