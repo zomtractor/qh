@@ -6,15 +6,17 @@
       <div class="profile-section">
         <div class="profile-header">
           <div class="avatar">
-            <img :src="userInfo.avatar" alt="用户头像">
+            <img :src="default_img" alt="用户头像">
           </div>
           <div class="info">
-            <h2>{{ userInfo.nickname }}</h2>
+            <h2>{{ userInfo.name }}</h2>
             <div class="basic-info">
               <p>学历：{{ userInfo.education }}</p>
               <p>年龄：{{ userInfo.age }}</p>
-              <p>{{ userInfo.university }} {{ userInfo.major }}</p>
-              <p>期望：{{ userInfo.expectation }} {{ userInfo.salary }}</p>
+              <p>性别：{{ userInfo.gender }}</p>
+              <p>电话：{{ userInfo.phone }}</p>
+              <p>{{ userInfo.school }} </p>
+              <p>期望：{{ userInfo.jobIntention }} </p>
             </div>
           </div>
           <el-button type="primary" size="small" @click="handleEdit">编辑</el-button>
@@ -51,33 +53,35 @@
     <!-- 职位列表部分 -->
     <div class="job-list">
       <div class="filter-tabs">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="已通过" name="passed"></el-tab-pane>
-          <el-tab-pane label="已投递" name="delivered"></el-tab-pane>
-          <el-tab-pane label="感兴趣" name="interested"></el-tab-pane>
-          <el-tab-pane label="面试" name="interview"></el-tab-pane>
+        <el-tabs v-model="activeTab"  @tab-click="handleTabClick">
+          <el-tab-pane label="已通过" name="passed" value="已通过"></el-tab-pane>
+          <el-tab-pane label="已投递" name="delivered" value="已投递"></el-tab-pane>
+          <el-tab-pane label="感兴趣" name="interested" value="感兴趣"></el-tab-pane>
+          <el-tab-pane label="面试" name="interview" value="面试"></el-tab-pane>
         </el-tabs>
       </div>
       
       <div class="job-items">
         <div v-for="(job, index) in jobList" :key="index" class="job-item">
           <div class="job-header">
-            <h3>{{ job.title }}</h3>
+            <h3>{{ job.jobName }}</h3>
             <div class="job-meta">
-              <span>薪资：{{ job.salary }}</span>
+              <span>薪资：{{ job.salaryDesc }}</span>
               <span>地点：{{ job.location }}</span>
             </div>
           </div>
           <div class="job-content">
             <div class="responsibilities">
-              <p v-for="(item, idx) in job.responsibilities" :key="idx">{{ idx + 1 }}. {{ item }}</p>
+              <p >{{ job.requirement }}</p>
             </div>
           </div>
           <div class="company-info">
-            <img :src="job.companyLogo" alt="公司logo">
+            <img :src="default_img" alt="公司logo">
             <div class="company-meta">
-              <span>{{ job.companyName }}</span>
-              <span>人数：{{ job.employeeCount }}+</span>
+              <!-- <span>{{ job.companyName }}</span> -->
+              <!-- <span>人数：{{ job.employeeCount }}+</span> -->
+              <span>{{ job.etpId }}</span>
+              <span>人数：999+</span>
             </div>
           </div>
 
@@ -131,8 +135,8 @@
       :visible.sync="editDialogVisible"
       width="40%">
       <el-form :model="editForm" :rules="rules" ref="editForm" label-width="100px">
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="editForm.nickname"></el-input>
+        <el-form-item label="昵称" prop="name">
+          <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="学历" prop="education">
           <el-select v-model="editForm.education" placeholder="请选择学历">
@@ -145,17 +149,14 @@
         <el-form-item label="年龄" prop="age">
           <el-input-number v-model="editForm.age" :min="18" :max="100"></el-input-number>
         </el-form-item>
-        <el-form-item label="学校" prop="university">
-          <el-input v-model="editForm.university"></el-input>
+        <el-form-item label="学校" prop="school">
+          <el-input v-model="editForm.school"></el-input>
         </el-form-item>
-        <el-form-item label="专业" prop="major">
-          <el-input v-model="editForm.major"></el-input>
+        <el-form-item label="期望职位" prop="jobIntention">
+          <el-input v-model="editForm.jobIntention"></el-input>
         </el-form-item>
-        <el-form-item label="期望职位" prop="expectation">
-          <el-input v-model="editForm.expectation"></el-input>
-        </el-form-item>
-        <el-form-item label="期望薪资" prop="salary">
-          <el-input v-model="editForm.salary"></el-input>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="editForm.phone"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -167,19 +168,33 @@
 </template>
 
 <script>
+
+
+
+import { getUserInfo, updateUserInfo,getInterviewInfo} from '@/api/jobseeker/resume'
+import { getCurrentUser} from '@/utils/local'
+import { search, confirmFilters,submitResume, navigateToHome } from '@/api/home/home'
+
+
 export default {
   name: 'Message',
   data() {
     return {
+      default_img: require('@/assets/default-avatar.jpg'),
+      activeTab: '已通过',
       userInfo: {
+        id:1,
         avatar: require('@/assets/default-avatar.jpg'),
-        nickname: '昵称',
+        name: '昵称',
         education: '硕士',
         age: 25,
-        university: '福州大学',
+        school: '福州大学',
         major: '软件工程',
-        expectation: '后端开发',
-        salary: '10k-12k'
+        gender:'男',
+        jobIntention: '后端开发',
+        phone:"1232324",
+        email:''
+        
       },
       attachments: [
         { name: '简历1.pdf', time: '2025.4.20 18：35' },
@@ -189,10 +204,10 @@ export default {
       activeTab: 'passed',
       jobList: [
         {
-          title: 'Python开发工程师',
-          salary: '7k-8k',
+          name: 'Python开发工程师',
+          salaryDesc: '7k-8k',
           location: '福州',
-          responsibilities: [
+          requirement: [
             '负责集团相关工具框架建设及维护',
             '负责公司内容标准化开发测试环境搭建及维护',
             '负责游戏运营相关大数据分析工具及后台支撑'
@@ -209,16 +224,19 @@ export default {
       chatMessage: '',
       editDialogVisible: false,
       editForm: {
-        nickname: '',
+        gender: 'male',
+        name: '',
         education: '',
         age: 18,
-        university: '',
+        school: '',
         major: '',
-        expectation: '',
-        salary: ''
+        jobIntention: '',
+        salary: '',
+        userId:getCurrentUser().id,
+        email: '',
       },
       rules: {
-        nickname: [
+        name: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
         ],
@@ -228,22 +246,63 @@ export default {
         age: [
           { required: true, message: '请输入年龄', trigger: 'blur' }
         ],
-        university: [
+        school: [
           { required: true, message: '请输入学校名称', trigger: 'blur' }
         ],
-        major: [
-          { required: true, message: '请输入专业', trigger: 'blur' }
-        ],
-        expectation: [
+        // major: [
+        //   { required: true, message: '请输入专业', trigger: 'blur' }
+        // ],
+        jobIntention: [
           { required: true, message: '请输入期望职位', trigger: 'blur' }
         ],
-        salary: [
-          { required: true, message: '请输入期望薪资', trigger: 'blur' }
+        phone: [
+          { required: true, message: '请输入电话', trigger: 'blur' }
         ]
       }
     }
   },
+  created() {
+    // userInfo = getUserInfo(userId)
+    this.getuserInfo()
+    this.getinterviewInfo()
+    console.log(11111)
+    console.log(this.jobList)
+    // this.userInfo.avatar = "../assets/default-avatar.jpg"
+  
+  },
   methods: {
+    handleTabClick(){
+      this.getinterviewInfo()
+    },
+    async getuserInfo() {
+      try {
+
+        const res = await getUserInfo(getCurrentUser().id)
+        this.userInfo = res.data
+        
+      } catch (error) {
+        this.$message.error('失败')
+        console.error('失败:', error)
+      }
+    },
+
+
+    async getinterviewInfo() {
+      let interview = {
+          userId: getCurrentUser().id,
+          interviewStatus: this.activeTab
+      }
+      try {
+        
+        const res = await getInterviewInfo(interview)
+        console.log(res.data)
+        this.jobList = res.data
+        
+      } catch (error) {
+        this.$message.error('失败')
+        console.error('失败:', error)
+      }
+    },
 
     handleUploadSuccess(res, file) {
       // 上传成功后将文件添加到附件列表
@@ -296,6 +355,11 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // 这里添加提交表单的逻辑
+          
+          this.editForm.userId = getCurrentUser().id,
+          this.editForm.email = this.userInfo.email
+          this.editForm.gender = this.userInfo.gender
+          updateUserInfo(this.editForm )
           this.userInfo = { ...this.editForm };  // 更新用户信息
           this.editDialogVisible = false;
           this.$message.success('保存成功');
@@ -305,6 +369,9 @@ export default {
       });
     }
   }
+  
+
+
 }
 </script>
 
@@ -434,6 +501,15 @@ export default {
   padding: 10px;
   border-bottom: 1px solid #eee;
 }
+
+
+.attachment-item:hover {
+  background-color: #f5f7fa; /* Element UI 主题色中的浅灰色 */
+  border-radius: 4px;
+  transform: translateY(-1px); /* 轻微上移效果 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 添加阴影 */
+}
+
 
 .file-time {
   margin-left: auto;

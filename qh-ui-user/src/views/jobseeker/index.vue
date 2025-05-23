@@ -25,7 +25,7 @@
           <div class="user-info">
             <span >{{currentUser.name}}</span>
             <el-dropdown @command="logout">
-              <image-preview :src="currentUser.avatarFileId" width="32px" height="32px" />
+              <image-preview :src="currentUser.avatar" width="32px" height="32px" />
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>

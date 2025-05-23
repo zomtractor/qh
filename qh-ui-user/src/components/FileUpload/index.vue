@@ -177,6 +177,10 @@ export default {
         this.$refs.fileUpload.handleRemove(file);
         this.uploadedSuccessfully();
       }
+      // safely emit "on-success"
+      if(this.$listeners["on-success"]) {
+        this.$emit("on-success");
+      }
     },
     // 删除文件
     handleDelete(index) {

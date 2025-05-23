@@ -44,32 +44,32 @@
       <el-button type="primary" @click="handleConfirm">确定</el-button>
     </div>
 
-    <!-- 职位卡片 -->
+
+    <!-- 职位列表 -->
     <div class="job-list">
       <div class="job-card" v-for="(job, index) in jobs" :key="index">
-        <div class="job-title">{{ job.title }}</div>
-        <div class="company-info">
-          <div class="company-logo"></div>
-          <div class="company-name">{{ job.company }}</div>
-          <div class="company-size">{{ job.size }}</div>
-        </div>
-        <div class="skills">
-          <el-tag v-for="skill in job.skills" :key="skill">{{ skill }}</el-tag>
-        </div>
-        <div class="job-description">
-          <div v-for="(desc, index) in job.description" :key="index">{{ desc }}</div>
-        </div>
-        <div class="job-details">
-          <div class="salary">{{ job.salary }}</div>
-          <div class="location">{{ job.location }}</div>
-        </div>
+      <div class="job-header">
+           <div class="job-name">职位名称：{{ job.name }}</div>
+           <div class="job-popularity">热门度：{{ job.popularity }}</div>
+      </div>
+      <div class="job-info">
+           <div class="salary">薪资：{{ job.salaryDesc }}</div>
+           <div class="location">地点：{{ job.location }}</div>
+      </div>
+      <div class="job-description">
+                        <div class="description-title">职位描述：</div>
+                        <div class="description-content">{{ job.description }}</div>
+                      </div>
+                      <div class="job-requirement">
+                                        <div class="requirement-title">职位要求：</div>
+                                        <div class="requirement-content">{{ job.requirement }}</div>
+                                      </div>
         <div class="actions">
           <el-button type="primary" @click="handleCommunicate">沟通</el-button>
-          <el-button type="primary" @click="handleSubmitResume">投递简历</el-button>
+          <el-button type="success" @click="handleSubmitResume">投递简历</el-button>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -95,61 +95,23 @@ export default {
       industries: [
         '国企', '外企', '民企', '事业单位', '银行', '央企'
       ],
-      jobs: [
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        },
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        },
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        }
-      ],
+      jobs: [],
       total: 68, // 总条数
       pageSize: 5, // 每页显示条数
       currentPage: 1 // 当前页码
     }
   },
   created() {
-    navigateToHome(); // 进入页面时发送请求
+    navigateToHome().then(res => {
+        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
+      }); // 进入页面时发送请求并排序
   },
   methods: {
     handleSearch() {
       search({
         keyword: this.searchKeyword,
       }).then(res => {
-        this.jobs = res.data;
+        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
       })
     },
     handleConfirm() {
@@ -159,7 +121,7 @@ export default {
         industry: this.industry
       };
       confirmFilters(params).then(res => {
-
+        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
       });
     },
     handleCommunicate() {
@@ -200,16 +162,24 @@ export default {
 }
 
 .job-list {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
 
-.job-card {
-  margin-bottom: 20px;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
+    .job-card {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
 }
 
 .job-title {
@@ -256,12 +226,85 @@ export default {
   margin-top: 10px;
 }
 
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 .actions .el-button {
-  margin-right: 10px;
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.actions .el-button--primary {
+  background: #409eff;
+  border-color: #409eff;
+}
+
+.actions .el-button--success {
+  background: #67c23a;
+  border-color: #67c23a;
 }
 
 .pagination {
   margin-top: 20px;
   text-align: center;
 }
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.job-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d2129;
+}
+
+.job-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #4e5969;
+}
+
+.salary {
+  color: #f56c6c;
+  font-weight: 500;
+}
+
+.location {
+  color: #86909c;
+}
+
+.job-description,
+.job-requirement {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.description-title,
+.requirement-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2129;
+  margin-bottom: 12px;
+}
+
+.description-content,
+.requirement-content {
+  font-size: 14px;
+  color: #4e5969;
+  line-height: 1.6;
+}
+</style>
+
 </style>

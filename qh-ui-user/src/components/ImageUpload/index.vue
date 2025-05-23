@@ -179,6 +179,10 @@ export default {
         this.$refs.imageUpload.handleRemove(file);
         this.uploadedSuccessfully();
       }
+      // safely emit "on-success"
+      if(this.$listeners["on-success"]) {
+        this.$emit("on-success");
+      }
     },
     // 删除图片
     handleDelete(file) {

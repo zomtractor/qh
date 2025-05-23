@@ -2,6 +2,7 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Tag;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 标签管理Mapper接口
@@ -59,5 +60,5 @@ public interface TagMapper
      */
     public int deleteTagByIds(Long[] ids);
 
-    List<Tag> selectTagsByIds(String ids);
+    List<Tag> selectTagsByIds(@Param("ids") String ids);
 }

@@ -54,6 +54,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="name != null  and name != ''"> and j.name like concat('%', #{name}, '%')</if>
             <if test="etpId != null  and etpId != ''"> and j.etp_id like concat('%', #{etpId}, '%')</if>
+            <if test="categoryIds != null and categoryIds != ''">
+                <foreach item="category" index="index" collection="categoryIds.split(',')">
+                    and find_in_set(#{category} , category_ids) > 0
+                </foreach>
+            </if>
+            <if test="tagIds != null and tagIds != ''">
+                <foreach item="tag" index="index" collection="tagIds.split(',')">
+                    and find_in_set(#{tag} , tag_ids) > 0
+                </foreach>
+            </if>
             <if test="description != null  and description != ''"> and j.description like concat('%', #{description}, '%')</if>
         </where>
     </select>

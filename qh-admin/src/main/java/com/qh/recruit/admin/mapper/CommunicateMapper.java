@@ -2,7 +2,7 @@ package com.qh.recruit.admin.mapper;
 
 import java.util.List;
 import com.qh.recruit.admin.domain.Communicate;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 沟通Mapper接口
@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author ruoyi
  * @date 2025-05-02
  */
-@Mapper
 public interface CommunicateMapper 
 {
     /**
@@ -61,5 +60,5 @@ public interface CommunicateMapper
      */
     public int deleteCommunicateByIds(Long[] ids);
 
-    public int selectListByPeerId(Long id1, Long id2);
+    public List<Communicate> selectListByPeerId(@Param("id1") Long id1,@Param("id2") Long id2);
 }
