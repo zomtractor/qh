@@ -157,6 +157,13 @@
     <!-- 添加或修改简历对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="用户" prop="userId">
+          <el-select v-model="form.userId" placeholder="请选择求职者用户"
+                     :loading="loading" @visible-change="getUserList" :style="{width: '100%'}">
+            <el-option v-for="user in userList" :key="user.id" :label="user.username"
+                       :value="user.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="头像文件ID" prop="avatarFileId">
           <image-upload v-model="form.avatarFileId" :file-type="['png', 'jpg', 'jpeg']" limit="1"/>
         </el-form-item>
@@ -195,6 +202,7 @@
 
 <script>
 import { listResume, getResume, delResume, addResume, updateResume } from "@/api/admin/resume";
+import {listUser} from "@/api/admin/user";
 
 export default {
   name: "Resume",
@@ -212,6 +220,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      userList: [],
       // 简历表格数据
       resumeList: [],
       // 弹出层标题
@@ -349,6 +358,11 @@ export default {
       this.download('admin/resume/export', {
         ...this.queryParams
       }, `resume_${new Date().getTime()}.xlsx`)
+    },
+    getUserList() {
+      listUser({userType: 'job_seeker'}).then(response => {
+        this.userList = response.rows;
+      });
     }
   }
 };

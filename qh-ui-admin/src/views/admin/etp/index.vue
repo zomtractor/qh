@@ -56,7 +56,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['admin:etp:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -67,7 +68,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['admin:etp:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -78,7 +80,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['admin:etp:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -88,28 +91,29 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['admin:etp:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="etpList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="用户名" align="center" prop="userName" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="用户名" align="center" prop="userName"/>
       <el-table-column label="商标id" align="center" prop="logoFileId">
         <template slot-scope="scope">
           <image-preview :src="scope.row.logoFileId"/>
         </template>
       </el-table-column>
-      <el-table-column label="企业名称" align="center" prop="name" />
-      <el-table-column label="宣传信息" align="center" prop="description" />
-      <el-table-column label="法人" align="center" prop="legalPerson" />
-      <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="电话" align="center" prop="phone" />
-      <el-table-column label="电子邮件" align="center" prop="email" />
-      <el-table-column label="官网" align="center" prop="website" />
-      <el-table-column label="企业热度" align="center" prop="popularity" />
+      <el-table-column label="企业名称" align="center" prop="name"/>
+      <el-table-column label="宣传信息" align="center" prop="description"/>
+      <el-table-column label="法人" align="center" prop="legalPerson"/>
+      <el-table-column label="地址" align="center" prop="address"/>
+      <el-table-column label="电话" align="center" prop="phone"/>
+      <el-table-column label="电子邮件" align="center" prop="email"/>
+      <el-table-column label="官网" align="center" prop="website"/>
+      <el-table-column label="企业热度" align="center" prop="popularity"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -128,14 +132,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['admin:etp:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['admin:etp:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -154,32 +160,37 @@
         <el-form-item label="logo" prop="logoFileId">
           <image-upload v-model="form.logoFileId" :file-type="['png', 'jpg', 'jpeg']" limit="1"/>
         </el-form-item>
-        <el-form-item label="用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户id" />
+        <!--          <el-input v-model="form.userId" placeholder="请输入用户id" />-->
+        <el-form-item label="用户" prop="userId">
+          <el-select v-model="form.userId" placeholder="请选择企业用户"
+                     :loading="loading" @visible-change="getUserList" :style="{width: '100%'}">
+            <el-option v-for="user in userList" :key="user.id" :label="user.username"
+                       :value="user.id"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="企业名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入企业名称" />
+          <el-input v-model="form.name" placeholder="请输入企业名称"/>
         </el-form-item>
         <el-form-item label="宣传信息" prop="description">
-          <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.description" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="法人" prop="legalPerson">
-          <el-input v-model="form.legalPerson" placeholder="请输入法人" />
+          <el-input v-model="form.legalPerson" placeholder="请输入法人"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址" />
+          <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入电话" />
+          <el-input v-model="form.phone" placeholder="请输入电话"/>
         </el-form-item>
         <el-form-item label="电子邮件" prop="email">
-          <el-input v-model="form.email" placeholder="请输入电子邮件" />
+          <el-input v-model="form.email" placeholder="请输入电子邮件"/>
         </el-form-item>
         <el-form-item label="官网" prop="website">
-          <el-input v-model="form.website" placeholder="请输入官网" />
+          <el-input v-model="form.website" placeholder="请输入官网"/>
         </el-form-item>
         <el-form-item label="企业热度" prop="popularity">
-          <el-input v-model="form.popularity" placeholder="请输入企业热度" />
+          <el-input v-model="form.popularity" placeholder="请输入企业热度"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -191,7 +202,8 @@
 </template>
 
 <script>
-import { listEtp, getEtp, delEtp, addEtp, updateEtp } from "@/api/admin/etp";
+import {listEtp, getEtp, delEtp, addEtp, updateEtp} from "@/api/admin/etp";
+import {listUser} from "@/api/admin/user";
 
 export default {
   name: "Etp",
@@ -201,6 +213,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      userList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -231,13 +244,13 @@ export default {
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: "todo不能为空", trigger: "blur" }
+          {required: true, message: "todo不能为空", trigger: "blur"}
         ],
         name: [
-          { required: true, message: "企业名称不能为空", trigger: "blur" }
+          {required: true, message: "企业名称不能为空", trigger: "blur"}
         ],
         legalPerson: [
-          { required: true, message: "法人不能为空", trigger: "blur" }
+          {required: true, message: "法人不能为空", trigger: "blur"}
         ],
       }
     };
@@ -294,7 +307,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -336,18 +349,24 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除企业管理编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除企业管理编号为"' + ids + '"的数据项？').then(function () {
         return delEtp(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
       this.download('admin/etp/export', {
         ...this.queryParams
       }, `etp_${new Date().getTime()}.xlsx`)
+    },
+    getUserList() {
+      listUser({userType: 'enterprise'}).then(response => {
+        this.userList = response.rows;
+      });
     }
   }
 };
