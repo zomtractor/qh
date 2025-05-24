@@ -23,5 +23,13 @@ export function navigateToHome() {
   return request({
     url: '/jobSeeker/list',
     method: 'get'
-  });
+  })
+}
+
+export function page(params) {
+    return request({
+      url: '/jobSeeker/page',
+      method: 'post',
+      data: params
+    });
 }

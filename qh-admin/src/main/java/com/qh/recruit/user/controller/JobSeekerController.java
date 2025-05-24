@@ -7,6 +7,7 @@ import com.qh.recruit.admin.service.IUserService;
 import com.qh.recruit.common.core.controller.BaseController;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.page.TableDataInfo;
+import com.qh.recruit.user.domain.Dto.PageDto;
 import com.qh.recruit.user.domain.Dto.UserJobDto;
 import com.qh.recruit.user.domain.ResumeJob;
 import com.qh.recruit.user.domain.UserJob;
@@ -32,10 +33,23 @@ public class JobSeekerController extends BaseController {
     ResumeUserService resumeuserService;
 
     @GetMapping("/list")
-    public TableDataInfo getJobList() {
-        startPage();
-        return userJobService.getJobList();
+    public TableDataInfo getJobList(@RequestParam(required = false,defaultValue = "5") int pageSize) {
+        List<UserJob> list=userJobService.getJobList(pageSize);
+        TableDataInfo tableDataInfo=new TableDataInfo();
+        tableDataInfo.setRows(list);
+        tableDataInfo.setTotal(userJobService.findTotal());
+        return tableDataInfo;
     }
+
+    @PostMapping("/page")
+    public TableDataInfo getPageList(@RequestBody PageDto pageDto){
+        List<UserJob> list=userJobService.getPageList((pageDto.getPageNum()-1)*pageDto.getPageSize(),pageDto.getPageSize());
+        TableDataInfo tableDataInfo=new TableDataInfo();
+        tableDataInfo.setRows(list);
+        tableDataInfo.setTotal(userJobService.findTotal());
+        return tableDataInfo;
+    }
+
     @GetMapping("/userList")
     public TableDataInfo getUserList() {
         startPage();
@@ -46,14 +60,14 @@ public class JobSeekerController extends BaseController {
     @GetMapping("/search")
     public TableDataInfo search(@RequestParam(value = "keyword",defaultValue = "all") String keyword){
         if(keyword.equals("all")){
-            return userJobService.getJobList();
+            return getDataTable(userJobService.getJobList(5));
         }
-        return userJobService.getSearchJobList(keyword);
+        return getDataTable(userJobService.getSearchJobList(keyword));
     }
 
     @PostMapping("/confirm")
     public TableDataInfo confirm(@RequestBody UserJobDto userJobDto) {
-        return userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary() );
+        return getDataTable(userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary()));
     }
 
     @PostMapping("/get_info")

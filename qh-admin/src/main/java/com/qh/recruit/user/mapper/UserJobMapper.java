@@ -7,7 +7,12 @@ import java.util.List;
 
 @Mapper
 public interface UserJobMapper {
-    public List<UserJob> selectJobList();
+
+    public List<UserJob> getPageList(int pageNum,int pageSize);
+
+    public int findTotal();
+
+    public List<UserJob> selectJobList(int pageSize);
 
     public List<UserJob> searchJobList(String keyword);
 

@@ -70,11 +70,21 @@
         </div>
       </div>
     </div>
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="pageSize"
+        :current-page="currentPage"
+        @current-change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { search, confirmFilters,submitResume, navigateToHome } from '@/api/home/home'
+import { search, confirmFilters,submitResume, navigateToHome,page } from '@/api/home/home'
 
 export default {
   name: 'Home',
@@ -96,7 +106,7 @@ export default {
         '国企', '外企', '民企', '事业单位', '银行', '央企'
       ],
       jobs: [],
-      total: 68, // 总条数
+      total: 0, // 总条数
       pageSize: 5, // 每页显示条数
       currentPage: 1 // 当前页码
     }
@@ -104,6 +114,7 @@ export default {
   created() {
     navigateToHome().then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
+        this.total= res.total;
       }); // 进入页面时发送请求并排序
   },
   methods: {
@@ -112,6 +123,7 @@ export default {
         keyword: this.searchKeyword,
       }).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
+        this.total = res.total;
       })
     },
     handleConfirm() {
@@ -122,6 +134,7 @@ export default {
       };
       confirmFilters(params).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
+        this.total = res.total;
       });
     },
     handleCommunicate() {
@@ -131,6 +144,19 @@ export default {
     handleSubmitResume() {
       this.$router.push({path: '/communicate'});
         // 处理投递简历结果
+    },
+    handlePageChange(page) {
+      this.currentPage = page;
+      this.getJobList();
+    },
+    getJobList() {
+      page({
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      }).then(res => {
+        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
+        this.total = res.total;
+      })
     }
   }
 }
