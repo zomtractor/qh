@@ -107,7 +107,7 @@ export default {
       ],
       jobs: [],
       total: 0, // 总条数
-      pageSize: 5, // 每页显示条数
+      pageSize: 8, // 每页显示条数
       currentPage: 1 // 当前页码
     }
   },

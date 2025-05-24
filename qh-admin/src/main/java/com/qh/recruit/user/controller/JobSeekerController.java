@@ -33,7 +33,7 @@ public class JobSeekerController extends BaseController {
     ResumeUserService resumeuserService;
 
     @GetMapping("/list")
-    public TableDataInfo getJobList(@RequestParam(required = false,defaultValue = "5") int pageSize) {
+    public TableDataInfo getJobList(@RequestParam(required = false,defaultValue = "8") int pageSize) {
         List<UserJob> list=userJobService.getJobList(pageSize);
         TableDataInfo tableDataInfo=new TableDataInfo();
         tableDataInfo.setRows(list);
