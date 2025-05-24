@@ -3,7 +3,7 @@
     <!-- 筛选条件 -->
     <div class="filter-section">
       <div class="filter-tags">
-        <el-radio-group v-model="priority">
+        <el-radio-group v-model="priority" @change="handlePriorityChange">
           <el-radio label="skill">优先技能</el-radio>
           <el-radio label="hot">优先热度</el-radio>
           <el-radio label="welfare">优先福利</el-radio>
@@ -69,7 +69,7 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="100"
+        :total="total"
         :current-page.sync="currentPage"
         @current-change="handlePageChange">
       </el-pagination>
@@ -99,7 +99,7 @@ export default {
       ],
       currentPage: 1,
       pageSize: 8,
-      total: 60,
+      total: 0,
       jobs: [
         {
           title: 'Python开发工程师',
@@ -156,12 +156,33 @@ export default {
           industry: this.industry,
         }
         const res = await getRecommendJobs(params)
-        this.jobs = res.data
-        console.log(res.data.total)
+        if (res.data && res.data.list) {
+          this.jobs = res.data.list
+          this.total = res.data.total || 0
+        } else {
+          this.jobs = res.data || []
+          this.total = this.jobs.length
+        }
+
       } catch (error) {
         this.$message.error('获取职位列表失败')
         console.error('获取职位列表失败:', error)
       }
+    },
+    // 处理优先条件变化
+    async handlePriorityChange() {
+      this.currentPage = 1
+      await this.fetchJobs()
+      this.$message.success(`已切换到${this.getPriorityText()}推荐模式`)
+    },
+    // 获取优先条件文本
+    getPriorityText() {
+      const priorityMap = {
+        skill: '优先技能',
+        hot: '优先热度',
+        welfare: '优先福利'
+      }
+      return priorityMap[this.priority] || ''
     },
     // 处理筛选条件
     async handleFilter() {
