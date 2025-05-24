@@ -60,7 +60,7 @@ public class JobSeekerController extends BaseController {
     @GetMapping("/search")
     public TableDataInfo search(@RequestParam(value = "keyword",defaultValue = "all") String keyword){
         if(keyword.equals("all")){
-            return getDataTable(userJobService.getJobList(5));
+            return null;
         }
         return getDataTable(userJobService.getSearchJobList(keyword));
     }
