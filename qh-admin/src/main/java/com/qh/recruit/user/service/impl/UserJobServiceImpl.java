@@ -21,30 +21,34 @@ public class UserJobServiceImpl implements UserJobService {
     UserJobService userJobService;
 
     @Override
-    public TableDataInfo getJobList() {
-        List<UserJob> jobList = jobMapper.selectJobList();
-        TableDataInfo tableDataInfo=new TableDataInfo();
-        tableDataInfo.setRows(jobList);
-        return tableDataInfo;
+    public List<UserJob> getPageList(int pageNum, int pageSize) {
+        return jobMapper.getPageList(pageNum,pageSize);
     }
 
     @Override
-    public TableDataInfo getSearchJobList(String keyword) {
+    public int findTotal() {
+        return jobMapper.findTotal();
+    }
+
+    @Override
+    public List<UserJob> getJobList(int pageSize) {
+        List<UserJob> jobList = jobMapper.selectJobList(pageSize);
+        return jobList;
+    }
+
+    @Override
+    public List<UserJob> getSearchJobList(String keyword) {
         List<UserJob> jobs = jobMapper.searchJobList(keyword);
-        TableDataInfo tableDataInfo=new TableDataInfo();
-        tableDataInfo.setRows(jobs);
-        return tableDataInfo;
+        return jobs;
     }
 
     @Override
-    public TableDataInfo confirm(String location, String category, String salary) {
+    public List<UserJob> confirm(String location, String category, String salary) {
         Integer Id = userJobService.searchCategoryId(category);
         int[] result=userJobService.salaryBeginAndEnd(salary);
         String categoryId=String.valueOf(Id);
         List<UserJob> jobs = jobMapper.confirm(location, categoryId, result[0], result[1]);
-        TableDataInfo tableDataInfo=new TableDataInfo();
-        tableDataInfo.setRows(jobs);
-        return tableDataInfo;
+        return jobs;
     }
 
     @Override
