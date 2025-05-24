@@ -33,6 +33,9 @@ public class LoginController extends BaseController {
     @PostMapping("/tokenLogin")
     public AjaxResult tokenLogin(String token) {
         return loginService.tokenLogin(token);
+    }    @PostMapping("/tokenLogout")
+    public AjaxResult tokenLogout(String token) {
+        return loginService.tokenLogout(token);
     }
 
     @PostMapping("/register")

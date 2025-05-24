@@ -53,6 +53,15 @@ export function tokenLogin(token) {
         method: 'post',
     })
 }
+export function tokenLogout(token) {
+    return request({
+        url: `/login/tokenLogin?token=${token}`,
+        headers: {
+          isToken: false
+        },
+        method: 'post',
+    })
+}
 
 // 获取用户详细信息
 export function getInfo() {

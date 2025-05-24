@@ -1,7 +1,9 @@
 <template>
   <div class="message-container">
-    <Chatbox
-    />
+    <el-card>
+      <Chatbox/>
+    </el-card>
+
   </div>
 </template>
 
@@ -28,5 +30,9 @@ export default {
 .message-container {
   height: 100%;
   padding: 10px;
+}
+.el-card{
+  width: 100%;
+  height: 80vh;
 }
 </style>

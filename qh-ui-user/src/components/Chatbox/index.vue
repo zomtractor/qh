@@ -2,6 +2,7 @@
   <div class="chatbox">
     <!-- 左侧联系人列表 -->
     <div class="contacts">
+      <h3> 沟通对象 </h3>
       <el-menu :default-active="String(activeContactId)" @select="handleSelect">
         <el-menu-item
             v-for="contact in contacts"
@@ -16,7 +17,7 @@
 
     <!-- 右侧聊天窗口 -->
     <div class="chat-window">
-      <div class="messages">
+      <div class="messages" v-if="activeContactId>0">
         <div
             v-for="msg in messages"
             :key="msg.id"
@@ -193,6 +194,13 @@ export default {
   border-right: 1px solid #ccc;
   background: #fff;
 }
+.el-menu{
+  align-items: start;
+}
+.el-menu-item{
+  display: flex;
+  justify-content: flex-start;
+}
 
 .chat-window {
   flex: 1;
@@ -235,6 +243,8 @@ export default {
 .input-area {
   border-top: 1px solid #ccc;
   padding-top: 10px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .input-actions {

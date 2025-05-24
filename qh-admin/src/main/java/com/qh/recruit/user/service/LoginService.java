@@ -16,4 +16,5 @@ public interface LoginService {
     String generateVerifyCode();
 
     AjaxResult register(String role, String username, String password, String email, String phone, String verifyCode);
+    AjaxResult tokenLogout(String token);
 }

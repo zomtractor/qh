@@ -23,6 +23,9 @@
         </div>
         <div class="nav-right">
           <div class="user-info">
+            <el-badge is-dot class="item">
+              <i class="el-icon-bell" size="small" @click="changeMenu('Message')"></i>
+            </el-badge>
             <span >{{currentUser.name}}</span>
             <el-dropdown @command="logout">
               <image-preview :src="currentUser.avatar" width="32px" height="32px" />
@@ -48,7 +51,7 @@ import Message from "./message.vue";
 import Resume from "./resume.vue";
 import { navigateToHome } from '@/api/home/home'; // 导入首页请求方法
 import {getToken, removeToken} from "@/utils/auth";
-import {tokenLogin} from "@/api/login";
+import {tokenLogin, tokenLogout} from "@/api/login";
 import {setCurrentUser} from "@/utils/local";
 
 export default {
@@ -118,6 +121,9 @@ export default {
           navigateToHome(); // 发送首页数据请求
     }
   },
+  beforeDestroy() {
+    tokenLogout(getToken())
+  }
 };
 </script>
 
@@ -197,5 +203,9 @@ export default {
 .el-dropdown-menu__item {
   display: flex;
   justify-content: flex-end; /* 内容右对齐 */
+}
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
 }
 </style>

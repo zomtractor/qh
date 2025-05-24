@@ -165,9 +165,20 @@ public class LoginServiceImpl implements LoginService {
             dto.setPhone(etp.getPhone());
             dto.setEmail(etp.getEmail());
             dto.setAvatar(etp.getLogoFileId());
-
         }
+        template.opsForSet().add("online" , "" + user.getId());
         return AjaxResult.success("登录成功",dto);
+    }
+
+    @Override
+    public AjaxResult tokenLogout(String token) {
+        String idStr = template.opsForValue().get("token:" + token);
+        if(idStr==null) idStr = template.opsForValue().get("token:" + token.split(" ")[1]);
+        if (StringUtils.isEmpty(idStr)) {
+            return AjaxResult.success();
+        }
+        template.opsForSet().remove("online" , idStr);
+        return AjaxResult.success();
     }
 
     @Override

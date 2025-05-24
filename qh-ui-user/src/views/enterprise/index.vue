@@ -65,7 +65,7 @@ import Job from './job.vue';
 import Interview from './interview.vue';
 import Communicate from './communicate.vue';
 import {getToken, removeToken} from "@/utils/auth";
-import {tokenLogin} from "@/api/login";
+import {tokenLogin, tokenLogout} from "@/api/login";
 import {setCurrentUser} from "@/utils/local";
 export default {
   name: 'Enterprise',
@@ -134,6 +134,9 @@ export default {
       this.$message.error(err)
       window.location.href='/'
     })
+  },
+  beforeDestroy() {
+    tokenLogout(getToken())
   }
 };
 </script>
