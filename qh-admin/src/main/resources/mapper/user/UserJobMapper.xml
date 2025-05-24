@@ -45,4 +45,10 @@
         FROM tb_job
         where location = #{arg0} and category_ids LIKE CONCAT('%', #{arg1}, '%') and salary_desc between #{arg2} and #{arg3}
     </select>
+    <select id="selectJoball" resultType="com.qh.recruit.user.domain.UserJob">
+        SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
+               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
+               update_time AS updateTime, status, version
+        FROM tb_job
+    </select>
 </mapper>

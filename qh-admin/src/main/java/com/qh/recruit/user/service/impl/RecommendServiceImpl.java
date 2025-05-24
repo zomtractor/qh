@@ -92,7 +92,7 @@ public class RecommendServiceImpl implements RecommendService {
         List<UserJob> recommend = new ArrayList<>();
 
         if(Objects.equals(query.getCity(), "")){
-            recommend = userJobMapper.selectJobList(5);
+            recommend = userJobMapper.selectJoball();
         }else if(!query.getCity().isEmpty()){
             int[] ints = salaryBeginAndEnd(query.getSalary());
             long index = userJobMapper.searchCategoryId(query.getIndustry());

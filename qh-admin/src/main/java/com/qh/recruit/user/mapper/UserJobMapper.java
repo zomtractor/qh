@@ -19,4 +19,6 @@ public interface UserJobMapper {
     public Integer searchCategoryId(String category);
 
     public List<UserJob> confirm(String location, String categoryId, Integer begin, Integer end);
+
+    public List<UserJob> selectJoball();
 }
