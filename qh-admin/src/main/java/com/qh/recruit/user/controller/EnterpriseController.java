@@ -92,7 +92,6 @@ public class EnterpriseController extends BaseController {
     @GetMapping("/category/list")
     public TableDataInfo categoryList(Category category)
     {
-        startPage();
         List<Category> list = categoryService.selectCategoryList(category);
         return getDataTable(list);
     }
@@ -112,7 +111,6 @@ public class EnterpriseController extends BaseController {
     @GetMapping("/tag/list")
     public TableDataInfo tagList(Tag tag)
     {
-        startPage();
         List<Tag> list = tagService.selectTagList(tag);
         return getDataTable(list);
     }
