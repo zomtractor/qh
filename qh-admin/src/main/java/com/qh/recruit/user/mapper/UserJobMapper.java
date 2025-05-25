@@ -23,6 +23,6 @@ public interface UserJobMapper {
     public Integer confirmCount(String location, String categoryId, Integer begin, Integer end);
 
     public List<UserJob> confirm(String location, String categoryId, Integer begin, Integer end,Integer pageNum,Integer pageSize);
-
+    public List<UserJob> confirms(String location, String categoryId, Integer begin, Integer end);
     public List<UserJob> selectJoball();
 }
