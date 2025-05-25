@@ -49,6 +49,7 @@ import Home from "./home.vue";
 import Recommend from "./recommend.vue";
 import Message from "./message.vue";
 import Resume from "./resume.vue";
+import { navigateToHome } from '@/api/home/home'; // 导入首页请求方法
 import {getToken, removeToken} from "@/utils/auth";
 import {tokenLogin, tokenLogout} from "@/api/login";
 import {setCurrentUser} from "@/utils/local";
@@ -117,6 +118,7 @@ export default {
     },
     handleNavigateToHome() {
           this.changeMenu('Home'); // 切换到首页
+          navigateToHome(); // 发送首页数据请求
     }
   },
   beforeDestroy() {
