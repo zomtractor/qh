@@ -13,4 +13,7 @@ public interface ResumeUserService {
 
 
     public AjaxResult getInterviewInfo(Interview interview);
+
+
+    public AjaxResult getResumesImgInfo(Long userId);
 }

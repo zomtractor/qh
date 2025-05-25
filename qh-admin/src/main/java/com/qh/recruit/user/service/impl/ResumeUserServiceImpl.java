@@ -1,6 +1,7 @@
 package com.qh.recruit.user.service.impl;
 
 
+import com.qh.recruit.admin.domain.Etp;
 import com.qh.recruit.admin.domain.Interview;
 import com.qh.recruit.admin.domain.Job;
 import com.qh.recruit.admin.domain.Resume;
@@ -10,10 +11,12 @@ import com.qh.recruit.common.utils.DateUtils;
 import com.qh.recruit.user.domain.ResumeJob;
 import com.qh.recruit.user.mapper.ResumeUserMapper;
 
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.qh.recruit.user.service.ResumeUserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,13 +52,26 @@ public class ResumeUserServiceImpl implements ResumeUserService {
     public AjaxResult getInterviewInfo(Interview i) {
         List<Interview> interviews = resumeMapper.selectInterviewInfoByUserIdAndStatus(i);
         List<Long> jobIds = interviews.stream().map(Interview::getJobId).collect(Collectors.toList());
+        List<Long> etpIds = interviews.stream().map(Interview::getEtpId).collect(Collectors.toList());
+        
+        
         List<Job> jobs = resumeMapper.selectJobInfoByJobId(jobIds);
+        List<Etp> etps = resumeMapper.selectEtpInfoByEtpId(etpIds);
+        
+        
         Map<Long, Job> jobMap = jobs.stream()
                 .collect(Collectors.toMap(
                         Job::getId,           // 假设 Job 有 getJobId() 方法
                         Function.identity(),
                         (existing, replacement) -> existing // 若有重复 jobId，保留第一个
                 ));
+        Map<Long, Etp> etpMap = etps.stream()
+                .collect(Collectors.toMap(
+                        Etp::getId,           // 假设 Job 有 getJobId() 方法
+                        Function.identity(),
+                        (existing, replacement) -> existing // 若有重复 jobId，保留第一个
+                ));
+
 
 // 合并 interviews 和 jobs
         List<InterviewDto> mergedList = interviews.stream()
@@ -69,8 +85,9 @@ public class ResumeUserServiceImpl implements ResumeUserService {
                                 job.getLocation(),
                                 job.getSalaryDesc(),
                                 job.getEtpId(),      // 假设 Job 有 getEtpId()
-                                job.getName()    // 假设 Job 有 getEtpId()
-
+                                job.getName(),   // 假设 Job 有 getEtpId()
+                                null,
+                                null
                         );
                     } else {
                         return null; // 无匹配 Job 的 Interview，按需处理
@@ -79,9 +96,36 @@ public class ResumeUserServiceImpl implements ResumeUserService {
                 .filter(Objects::nonNull) // 过滤掉无匹配项（可选）
                 .collect(Collectors.toList());
 
+        for (InterviewDto dto : mergedList) {
+            // 操作 dto 对象，例如：\
+            if (!etpMap.isEmpty() && etpMap.containsKey(dto.getEtpId())) {
+                dto.setLogo(etpMap.get(dto.getEtpId()).getLogoFileId());
+                dto.setEtpName(etpMap.get(dto.getEtpId()).getName());
+            }
+        }
+
 
         int debug = 1;
         return AjaxResult.success(mergedList);
+    }
+
+
+    @Override
+    public AjaxResult getResumesImgInfo(Long userId){
+        String imgIds = resumeMapper.getResumesImgInfoByUserId(userId);
+        List<String> list = new ArrayList<>();
+        if (imgIds == null || imgIds.isEmpty()) {
+            return null;
+        }
+        String[] parts = imgIds.split(",");
+        for (String part : parts) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) {
+                list.add(trimmed);
+            }
+        }
+
+        return AjaxResult.success(list);
     }
 
 

@@ -1,9 +1,11 @@
 package com.qh.recruit.user.mapper;
 
 
+import com.qh.recruit.admin.domain.Etp;
 import com.qh.recruit.admin.domain.Interview;
 import com.qh.recruit.admin.domain.Job;
 import com.qh.recruit.admin.domain.Resume;
+import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.user.domain.ResumeJob;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,5 +24,11 @@ public interface ResumeUserMapper {
     public List<Interview> selectInterviewInfoByUserIdAndStatus(Interview interview);
 
     public List<Job> selectJobInfoByJobId(@Param("jobIds") List<Long> jobIds);
+
+
+    public List<Etp> selectEtpInfoByEtpId(@Param("etpIds") List<Long> etpIds);
+
+
+    public String getResumesImgInfoByUserId(Long userId);
 
 }

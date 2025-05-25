@@ -6,7 +6,7 @@
       <div class="profile-section">
         <div class="profile-header">
           <div class="avatar">
-            <img :src="default_img" alt="用户头像">
+            <img :src="userInfo.avatarFileId || default_img" alt="用户头像">
           </div>
           <div class="info">
             <h2>{{ userInfo.name }}</h2>
@@ -42,9 +42,10 @@
         </div>
         <div class="attachment-list">
           <div v-for="(file, index) in attachments" :key="index" class="attachment-item">
-            <i class="el-icon-document"></i>
-            <span>{{ file.name }}</span>
-            <span class="file-time">{{ file.time }}</span>
+            <!-- <i class="el-icon-document"></i> -->
+            <!-- <span>{{ file }}</span> -->
+            <image-preview :src="file || default_img" width="100" height="100" />
+            <!-- <span class="file-time">{{ file.time }}</span> -->
           </div>
         </div>
       </div>
@@ -76,11 +77,11 @@
             </div>
           </div>
           <div class="company-info">
-            <img :src="default_img" alt="公司logo">
+            <img :src="job.logo || default_img" alt="公司logo">
             <div class="company-meta">
               <!-- <span>{{ job.companyName }}</span> -->
               <!-- <span>人数：{{ job.employeeCount }}+</span> -->
-              <span>{{ job.etpId }}</span>
+              <span>{{ job.etpName }}</span>
               <span>人数：999+</span>
             </div>
           </div>
@@ -169,22 +170,25 @@
 
 <script>
 
-
-
-import { getUserInfo, updateUserInfo,getInterviewInfo} from '@/api/jobseeker/resume'
+import ImagePreview from '@/components/ImagePreview'
+import { getUserInfo, updateUserInfo,getInterviewInfo,getResumeImgs} from '@/api/jobseeker/resume'
 import { getCurrentUser} from '@/utils/local'
 import { search, confirmFilters,submitResume, navigateToHome } from '@/api/home/home'
 
 
 export default {
   name: 'Message',
+  components: {
+    ImagePreview
+  },
   data() {
     return {
       default_img: require('@/assets/default-avatar.jpg'),
       activeTab: '已通过',
+      
       userInfo: {
         id:1,
-        avatar: require('@/assets/default-avatar.jpg'),
+        avatarFileId: require('@/assets/default-avatar.jpg'),
         name: '昵称',
         education: '硕士',
         age: 25,
@@ -197,9 +201,7 @@ export default {
         
       },
       attachments: [
-        { name: '简历1.pdf', time: '2025.4.20 18：35' },
-        { name: '简历2.pdf', time: '2025.4.20 18：35' },
-        { name: '简历3.pdf', time: '2025.4.20 18：35' }
+        
       ],
       activeTab: 'passed',
       jobList: [
@@ -212,8 +214,8 @@ export default {
             '负责公司内容标准化开发测试环境搭建及维护',
             '负责游戏运营相关大数据分析工具及后台支撑'
           ],
-          companyName: '测试公司',
-          companyLogo: require('@/assets/default-avatar.jpg'),
+          etpName: '测试公司',
+          logo: require('@/assets/default-avatar.jpg'),
           employeeCount: '9999'
         }
       ],
@@ -264,9 +266,11 @@ export default {
   created() {
     // userInfo = getUserInfo(userId)
     this.getuserInfo()
+    this.getresumeImgs()
     this.getinterviewInfo()
-    console.log(11111)
-    console.log(this.jobList)
+    // console.log(11111)
+    // console.log(this.jobList)
+    // console.log(this.attachments)
     // this.userInfo.avatar = "../assets/default-avatar.jpg"
   
   },
@@ -280,12 +284,27 @@ export default {
         const res = await getUserInfo(getCurrentUser().id)
         this.userInfo = res.data
         
+        
       } catch (error) {
         this.$message.error('失败')
         console.error('失败:', error)
       }
     },
 
+
+    async getresumeImgs() {
+      try {
+
+        const res = await getResumeImgs(getCurrentUser().id)
+        console.log(getCurrentUser().id)
+        this.attachments = res.data
+        console.log(res.data)
+        
+      } catch (error) {
+        this.$message.error('失败')
+        console.error('失败:', error)
+      }
+    },
 
     async getinterviewInfo() {
       let interview = {
@@ -637,3 +656,4 @@ export default {
   margin-top: 20px;
 }
 </style>
+

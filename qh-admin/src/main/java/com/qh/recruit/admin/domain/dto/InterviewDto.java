@@ -37,6 +37,8 @@ public class InterviewDto extends Interview {
     /** 企业名称 */
     private String etpName;
 
+    private String logo;
+
 
 
     /** 岗位职责 */
@@ -55,7 +57,7 @@ public class InterviewDto extends Interview {
     @Excel(name = "要求条件")
     private String requirement;
 
-    public InterviewDto(Long id, Long jobId, String requirement, String location, String salaryDesc, Long etpId, String name) {
+    public InterviewDto(Long id, Long jobId, String requirement, String location, String salaryDesc, Long etpId, String name, String logo, String etpName) {
 
         super();
         this.setId(id);
@@ -65,6 +67,8 @@ public class InterviewDto extends Interview {
         this.salaryDesc = salaryDesc;
         this.setEtpId(etpId);
         this.jobName = name;
+        this.logo = logo;
+        this.etpName = etpName;
 
     }
 
@@ -126,5 +130,13 @@ public class InterviewDto extends Interview {
 
     public void setEtpName(String etpName) {
         this.etpName = etpName;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 }

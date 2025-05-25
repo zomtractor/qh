@@ -89,6 +89,12 @@ public class JobSeekerController extends BaseController {
         return resumeuserService.getUserInfoByUserId(userId);
     }
 
+
+    @PostMapping("/get_resumeImgs")
+    public AjaxResult getResumeImgs(@RequestParam("user_id")Long userId) {
+        return resumeuserService.getResumesImgInfo(userId);
+    }
+
     @PostMapping("/updateUserInfo")
     public AjaxResult updateUserInfo(@RequestBody ResumeJob userInfo) {
         return resumeuserService.updateResumeInfo(userInfo);
