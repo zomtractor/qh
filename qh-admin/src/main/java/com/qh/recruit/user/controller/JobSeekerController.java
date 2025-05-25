@@ -1,8 +1,11 @@
 package com.qh.recruit.user.controller;
 
+import com.qh.recruit.admin.domain.Etp;
 import com.qh.recruit.admin.domain.Interview;
+import com.qh.recruit.admin.domain.Job;
 import com.qh.recruit.admin.domain.dto.InterviewDto;
 import com.qh.recruit.admin.service.IInterviewService;
+import com.qh.recruit.admin.service.IJobService;
 import com.qh.recruit.admin.service.IUserService;
 import com.qh.recruit.common.core.controller.BaseController;
 import com.qh.recruit.common.core.domain.AjaxResult;
@@ -17,6 +20,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
@@ -32,13 +36,17 @@ public class JobSeekerController extends BaseController {
     @Autowired
     ResumeUserService resumeuserService;
 
-    @GetMapping("/list")
-    public TableDataInfo getJobList(@RequestParam(required = false,defaultValue = "8") int pageSize) {
-        List<UserJob> list=userJobService.getJobList(pageSize);
-        TableDataInfo tableDataInfo=new TableDataInfo();
-        tableDataInfo.setRows(list);
-        tableDataInfo.setTotal(userJobService.findTotal());
-        return tableDataInfo;
+    @GetMapping("/job/list")
+    public TableDataInfo getJobList(UserJobDto job) {
+        startPage();
+        List<UserJobDto> list = userJobService.getJobList(job);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/job/{id}}")
+    public AjaxResult getJobInfo(@PathVariable("id") Long id)
+    {
+        return success(userJobService.selectJobById(id));
     }
 
     @PostMapping("/page")
@@ -70,9 +78,9 @@ public class JobSeekerController extends BaseController {
     @PostMapping("/confirm")
     public TableDataInfo confirm(@RequestBody UserJobDto userJobDto) {
         TableDataInfo tableDataInfo=new TableDataInfo();
-        tableDataInfo.setRows(userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary(),
-                (userJobDto.getPageNum()-1)*userJobDto.getPageSize(),userJobDto.getPageSize()));
-        tableDataInfo.setTotal(userJobService.confirmCount(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary()));
+//        tableDataInfo.setRows(userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary(),
+//                (userJobDto.getPageNum()-1)*userJobDto.getPageSize(),userJobDto.getPageSize()));
+//        tableDataInfo.setTotal(userJobService.confirmCount(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary()));
         return tableDataInfo;
     }
 

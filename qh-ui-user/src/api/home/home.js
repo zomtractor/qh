@@ -1,35 +1,18 @@
 import request from '@/utils/request'
 
 // 搜索方法
-export function search(params) {
+export function jobList(query) {
   return request({
-    url: '/jobSeeker/search',
+    url: '/jobSeeker/job/list',
     method: 'get',
-    params
+    params: query
   })
 }
 
-// 确认筛选条件方法
-export function confirmFilters(params) {
+// 查询岗位详细
+export function getJob(id) {
   return request({
-    url: '/jobSeeker/confirm',
-    method: 'post',
-    data: params
-  })
-}
-
-// 首页按钮路径
-export function navigateToHome() {
-  return request({
-    url: '/jobSeeker/list',
+    url: '/jobSeeker/job/' + id,
     method: 'get'
   })
-}
-
-export function page(params) {
-    return request({
-      url: '/jobSeeker/page',
-      method: 'post',
-      data: params
-    });
 }

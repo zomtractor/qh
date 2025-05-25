@@ -5,6 +5,60 @@
 
 <mapper namespace="com.qh.recruit.user.mapper.UserJobMapper">
 
+    <resultMap type="UserJobDto" id="UserJobResultDto">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="salaryDesc"    column="salary_desc"    />
+        <result property="location"    column="location"    />
+        <result property="requirement"    column="requirement"    />
+        <result property="etpId"    column="etp_id"    />
+        <result property="etpName"    column="etp_name"    />
+        <result property="categoryIds"    column="category_ids"    />
+        <result property="tagIds"    column="tag_ids"    />
+        <result property="popularity"    column="popularity"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectJobDtoOnly">
+        select j.id, j.name, j.description, salary_desc, location, requirement, etp_id, category_ids, tag_ids, j.popularity, j.create_time, j.update_time, j.status, j.version,
+               e.name as etp_name
+        from tb_job j left join tb_etp e on j.etp_id = e.id
+    </sql>
+
+    <select id="selectJobList" parameterType="UserJobDto" resultMap="UserJobResultDto">
+        <include refid="selectJobDtoOnly"/>
+        <where>
+            <if test="name != null  and name != ''"> and j.name like concat('%', #{name}, '%')</if>
+            <if test="etpId != null  and etpId != ''"> and j.etp_id = #{etpId}</if>
+            <if test="etpName != null and etpName != ''"> and e.name like concat('%', #{etpName}, '%')</if>
+            <if test="keywords != null and keywords != ''"> and j.name like concat('%', #{keywords}, '%') or e.name like concat('%', #{keywords}, '%')</if>
+            <if test="categoryIds != null and categoryIds != ''">
+                <foreach item="category" index="index" collection="categoryIds.split(',')">
+                    and find_in_set(#{category} , category_ids) > 0
+                </foreach>
+            </if>
+            <if test="tagIds != null and tagIds != ''">
+            <foreach item="tag" index="index" collection="tagIds.split(',')">
+                and find_in_set(#{tag} , tag_ids) > 0
+            </foreach>
+            </if>
+            <if test="salaryLowerBound != null and salaryLowerBound > 0">
+                and (j.salary_desc + 0) &gt;= #{salaryLowerBound}
+            </if>
+            <if test="salaryUpperBound != null and salaryUpperBound > 0">
+                and (j.salary_desc + 0) &lt;= #{salaryUpperBound}
+            </if>
+            <if test="location != null  and location != ''">
+                and j.location like concat('%',#{location},'%')
+            </if>
+            <if test="description != null  and description != ''"> and j.description like concat('%', #{description}, '%')</if>
+        </where>
+    </select>
+
     <select id="getPageList" resultType="UserJob">
         select id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
                category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
@@ -17,13 +71,13 @@
         select count(*) from tb_job
     </select>
 
-    <select id="selectJobList" resultType="UserJob">
-        SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
-               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
-               update_time AS updateTime, status, version
-        FROM tb_job
-        limit 0,#{pageSize}
-    </select>
+<!--    <select id="selectJobList" resultType="UserJob">-->
+<!--        SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,-->
+<!--               category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,-->
+<!--               update_time AS updateTime, status, version-->
+<!--        FROM tb_job-->
+<!--        limit 0,#{pageSize}-->
+<!--    </select>-->
 
     <select id="searchJobCount" resultType="Integer">
         SELECT count(*)

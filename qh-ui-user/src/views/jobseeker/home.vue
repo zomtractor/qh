@@ -3,7 +3,7 @@
     <!-- 搜索框 -->
     <div class="search-bar">
       <el-input
-        v-model="searchKeyword"
+        v-model="queryParams.keywords"
         placeholder="搜公司、职位"
         @keyup.enter.native="handleSearch"
       >
@@ -17,7 +17,7 @@
 
     <!-- 筛选条件 -->
     <div class="filters">
-      <el-select v-model="city" placeholder="选择城市">
+      <el-select v-model="queryParams.location" placeholder="选择城市" clearable>
         <el-option
           v-for="item in cities"
           :key="item"
@@ -25,45 +25,46 @@
           :value="item"
         />
       </el-select>
-      <el-select v-model="salary" placeholder="选择薪资">
+      <el-select v-model="salaryRange" placeholder="选择薪资" clearable>
         <el-option
           v-for="item in salaries"
-          :key="item"
-          :label="item"
-          :value="item"
+          :key="item.id"
+          :label="item.desc"
+          :value="item.range"
         />
       </el-select>
-      <el-select v-model="industry" placeholder="选择公司行业">
-        <el-option
-          v-for="item in industries"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
+      <el-select v-model="queryCategoryList" placeholder="请选择分类" multiple
+                 :loading="loading" @visible-change="getCategoryList">
+        <el-option v-for="category in categoryList" :key="category.id" :label="category.name"
+                   :value="category.id"></el-option>
       </el-select>
-      <el-button type="primary" @click="handleConfirm">确定</el-button>
+      <el-select v-model="queryTagList" placeholder="请选择标签" multiple
+                 :loading="loading" @visible-change="getTagList">
+        <el-option v-for="tag in tagList" :key="tag.id" :label="tag.name"
+                   :value="tag.id"></el-option>
+      </el-select>
+      <el-button type="primary" @click="handleSearch">确定</el-button>
     </div>
-
 
     <!-- 职位列表 -->
     <div class="job-list">
       <div class="job-card" v-for="(job, index) in jobs" :key="index">
-      <div class="job-header">
-           <div class="job-name">职位名称：{{ job.name }}</div>
-           <div class="job-popularity">热门度：{{ job.popularity }}</div>
-      </div>
-      <div class="job-info">
-           <div class="salary">薪资：{{ job.salaryDesc }}</div>
-           <div class="location">地点：{{ job.location }}</div>
-      </div>
-      <div class="job-description">
-                        <div class="description-title">职位描述：</div>
-                        <div class="description-content">{{ job.description }}</div>
-                      </div>
-                      <div class="job-requirement">
-                                        <div class="requirement-title">职位要求：</div>
-                                        <div class="requirement-content">{{ job.requirement }}</div>
-                                      </div>
+        <div class="job-header">
+             <div class="job-name">职位名称：{{ job.name }}</div>
+             <div class="job-popularity">热门度：{{ job.popularity }}</div>
+        </div>
+        <div class="job-info">
+             <div class="salary">薪资：{{ job.salaryDesc }}</div>
+             <div class="location">地点：{{ job.location }}</div>
+        </div>
+        <div class="job-description">
+          <div class="description-title">职位描述：</div>
+          <div class="description-content">{{ job.description }}</div>
+        </div>
+        <div class="job-requirement">
+          <div class="requirement-title">职位要求：</div>
+          <div class="requirement-content">{{ job.requirement }}</div>
+        </div>
         <div class="actions">
           <el-button type="primary" @click="handleCommunicate">沟通</el-button>
           <el-button type="success" @click="handleSubmitResume">投递简历</el-button>
@@ -71,106 +72,108 @@
       </div>
     </div>
     <div class="pagination">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="total"
-        :page-size="pageSize"
-        :current-page="currentPage"
-        @current-change="handlePageChange"
+      <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getJobList"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { search, confirmFilters,submitResume, navigateToHome,page } from '@/api/home/home'
+import { jobList, getJob } from '@/api/home/home'
+import { getCurrentUser } from "@/utils/local";
+import { listTag } from "@/api/etp/tag";
+import { listCategory } from "@/api/etp/category";
 
 export default {
   name: 'Home',
+
   data() {
     return {
-      searchKeyword: '', // 搜索关键词
-      city: '',
-      salary: '',
-      industry: '',
       cities: [
         '北京', '上海', '广州', '深圳', '天津', '重庆', '杭州', '南京', '武汉', '成都',
         '西安', '长沙', '沈阳', '哈尔滨', '长春', '济南', '郑州', '合肥', '福州', '南昌',
         '昆明', '贵阳', '南宁', '太原', '石家庄', '兰州', '西宁', '银川', '乌鲁木齐', '海口'
       ],
       salaries: [
-        '5k以下', '5-10k', '10-15k', '15k以上'
+        {id:1, desc:'5k以下', range:'0,5000'},
+        {id:2, desc:'5-10k', range:'5000,10000'},
+        {id:3, desc:'10-15k', range:'10000,15000'},
+        {id:4, desc:'15k以上', range:'15000,0'}
       ],
-      industries: [
-        '国企', '外企', '民企', '事业单位', '银行', '央企'
-      ],
+      loading: true,
       jobs: [],
-      total: 0, // 总条数
-      pageSize: 8, // 每页显示条数
-      currentPage: 1 // 当前页码
+      categoryList: [],
+      tagList: [],
+      queryCategoryList: [],
+      queryTagList: [],
+      salaryRange: null,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        name: null,
+        keywords: null,
+        categoryIds: null,
+        tagIds: null,
+        salaryLowerBound: null,
+        salaryUpperBound: null,
+        location: null,
+      },
     }
   },
   created() {
-    navigateToHome().then(res => {
-        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
-        this.total= res.total;
-      }); // 进入页面时发送请求并排序
+    this.getJobList();
   },
   methods: {
-    handleSearch() {
-      this.city = ''; // 重置城市选择
-      this.salary = ''; // 重置薪资选择
-      this.industry = ''; // 重置行业选择
-      search({
-        keyword: this.searchKeyword,
-        pageNum: this.currentPage,
-        pageSize: this.pageSize
-      }).then(res => {
+    // 获取岗位列表
+    getJobList() {
+      this.loading = true;
+      if (this.salaryRange != null) {
+        this.queryParams.salaryLowerBound = this.salaryRange.split(',')[0];
+        this.queryParams.salaryUpperBound = this.salaryRange.split(',')[1];
+      }
+      this.queryParams.categoryIds = this.queryCategoryList.join(",");
+      this.queryParams.tagIds = this.queryTagList.join(",");
+      jobList(this.queryParams).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
         this.total = res.total;
+        this.loading = false;
       })
     },
-    handleConfirm() {
-      const params = {
-        city: this.city,
-        salary: this.salary,
-        industry: this.industry,
-        pageNum: this.currentPage,
-        pageSize: this.pageSize
-      };
-      this.searchKeyword = ''; // 重置搜索框内容
-      confirmFilters(params).then(res => {
-        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
-        this.total = res.total;
+    /** 查询分类列表 */
+    getCategoryList() {
+      this.loading = true;
+      listCategory({}).then(response => {
+        this.categoryList = response.rows;
+        this.loading = false;
       });
     },
+    /** 查询标签列表 */
+    getTagList() {
+      this.loading = true;
+      listTag({}).then(response => {
+        this.tagList = response.rows;
+        this.loading = false;
+      });
+    },
+    // 搜索
+    handleSearch() {
+      this.queryParams.pageNum = 1;
+      this.getJobList();
+    },
+    // 沟通
     handleCommunicate() {
       this.$router.push({path: '/communicate'});
-        // 处理沟通结果
+        // TODO:处理沟通结果
     },
+    // 投递简历
     handleSubmitResume() {
       this.$router.push({path: '/communicate'});
-        // 处理投递简历结果
-    },
-    handlePageChange(page) {
-      this.currentPage = page;
-      if (this.searchKeyword) {
-        this.handleSearch();
-      } else if (this.city || this.salary || this.industry) {
-        this.handleConfirm();
-      } else {
-        this.getJobList();
-      }
-    },
-    getJobList() {
-      page({
-        pageNum: this.currentPage,
-        pageSize: this.pageSize
-      }).then(res => {
-        this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
-        this.total = res.total;
-      })
+        // TODO:处理投递简历结果
     }
   }
 }

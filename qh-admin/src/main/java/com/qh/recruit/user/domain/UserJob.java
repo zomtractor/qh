@@ -2,6 +2,7 @@ package com.qh.recruit.user.domain;
 
 import com.qh.recruit.common.annotation.Excel;
 import com.qh.recruit.common.core.domain.BaseEntity;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -20,8 +21,8 @@ public class UserJob extends BaseEntity
     @Excel(name = "岗位职责")
     private String description;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 薪资描述 */
+    @Excel(name = "薪资描述")
     private String salaryDesc;
 
     /** 工作地点 */
@@ -36,12 +37,12 @@ public class UserJob extends BaseEntity
     @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private Long etpId;
 
-    /** todo */
-    @Excel(name = "todo")
+    /** 分类 */
+    @Excel(name = "分类")
     private String categoryIds;
 
-    /** 标签ID，以逗号分隔 */
-    @Excel(name = "标签ID，以逗号分隔")
+    /** 标签 */
+    @Excel(name = "标签")
     private String tagIds;
 
     /** 岗位热度 */
