@@ -22,6 +22,8 @@ export default {
   },
   computed: {
   },
+  mounted() {
+  },
 };
 </script>
 
@@ -29,6 +31,7 @@ export default {
 .message-container {
   height: 100%;
   padding: 10px;
+  overflow: hidden;
 }
 .el-card{
   width: 100%;

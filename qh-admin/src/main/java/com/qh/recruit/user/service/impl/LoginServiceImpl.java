@@ -53,6 +53,7 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private StringRedisTemplate template;
 
+
     @Override
     public AjaxResult login(String role, String username, String password, String code, String uuid) {
         try{
@@ -166,7 +167,7 @@ public class LoginServiceImpl implements LoginService {
             dto.setEmail(etp.getEmail());
             dto.setAvatar(etp.getLogoFileId());
         }
-        template.opsForSet().add("online" , "" + user.getId());
+
         return AjaxResult.success("登录成功",dto);
     }
 
@@ -177,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.isEmpty(idStr)) {
             return AjaxResult.success();
         }
-        template.opsForSet().remove("online" , idStr);
+
         return AjaxResult.success();
     }
 

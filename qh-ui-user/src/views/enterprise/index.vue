@@ -38,9 +38,11 @@
       <!-- 顶部栏 -->
       <el-header class="top-bar">
         <div class="time">{{ currentTime }}</div>
-        <span class="user-name">欢迎您，企业用户{{currentUser.name}}</span>
+        <el-badge is-dot class="item" :hidden="bellState">
+          <i class="el-icon-bell" size="small" @click="handleMenuSelect('Communicate')"></i>
+        </el-badge>
+        <span class="user-name">&nbsp; &nbsp; 欢迎您，企业用户{{currentUser.name}}</span>
         <div class="user-info">
-
           <el-dropdown @command="logout">
             <image-preview :src="currentUser.avatar" width="32px" height="32px" />
             <el-dropdown-menu slot="dropdown">
@@ -51,7 +53,7 @@
       </el-header>
 
       <!-- 主体内容 -->
-      <el-main class="main-content">
+      <el-main>
         <component :is="currentView" />
       </el-main>
     </el-container>
@@ -74,6 +76,7 @@ export default {
       activeMenu: 'Company',
       currentView: 'Company',
       currentTime: '',
+      bellState: true,
       currentUser: {
         id: "",
         name: "",
@@ -134,9 +137,28 @@ export default {
       this.$message.error(err)
       window.location.href='/'
     })
+    setTimeout(()=>{
+      this.$store.dispatch('chat/connect');
+    },1000)
   },
   beforeDestroy() {
     tokenLogout(getToken())
+  },
+  computed: {
+    newState() {
+      return this.$store.state.chat.unreadStats;
+    }
+  },
+  watch: {
+    newState(newval,oldval){
+      console.log("123")
+      console.log(newval)
+      if (newval) {
+        setTimeout(()=>{
+          this.bellState = newval.total==0
+        },200)
+      }
+    }
   }
 };
 </script>

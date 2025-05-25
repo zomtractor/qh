@@ -14,7 +14,7 @@
               @select="changeMenu"
           >
             <el-menu-item index="Home" class="full-width-menu-item">
-                          <el-button type="primary" class="full-width-button" @click="handleNavigateToHome">首页</el-button>
+              <el-button type="primary" class="full-width-button" @click="handleNavigateToHome">首页</el-button>
             </el-menu-item>
             <el-menu-item index="Recommend">推荐</el-menu-item>
             <el-menu-item index="Message">消息</el-menu-item>
@@ -23,12 +23,12 @@
         </div>
         <div class="nav-right">
           <div class="user-info">
-            <el-badge is-dot class="item">
+            <el-badge is-dot class="item" :hidden="bellState">
               <i class="el-icon-bell" size="small" @click="changeMenu('Message')"></i>
             </el-badge>
-            <span >{{currentUser.name}}</span>
+            <span>{{ currentUser.name }}</span>
             <el-dropdown @command="logout">
-              <image-preview :src="currentUser.avatar" width="32px" height="32px" />
+              <image-preview :src="currentUser.avatar" width="32px" height="32px"/>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -38,7 +38,7 @@
       </el-header>
 
       <el-main>
-        <component :is="currentComponent" />
+        <component :is="currentComponent"/>
       </el-main>
     </el-container>
   </div>
@@ -49,10 +49,10 @@ import Home from "./home.vue";
 import Recommend from "./recommend.vue";
 import Message from "./message.vue";
 import Resume from "./resume.vue";
-import { navigateToHome } from '@/api/home/home'; // 导入首页请求方法
+import {navigateToHome} from '@/api/home/home'; // 导入首页请求方法
 import {getToken, removeToken} from "@/utils/auth";
 import {tokenLogin, tokenLogout} from "@/api/login";
-import {setCurrentUser} from "@/utils/local";
+import {getCurrentUser, setCurrentUser} from "@/utils/local";
 
 export default {
   name: 'JobSeeker',
@@ -60,6 +60,7 @@ export default {
     return {
       activeMenu: "Home",
       searchText: "",
+      bellState: true,
       componentsMap: {
         Home,
         Recommend,
@@ -76,17 +77,13 @@ export default {
       }
     };
   },
-  computed: {
-    currentComponent() {
-      return this.componentsMap[this.activeMenu];
-    },
-  },
+
   mounted() {
     tokenLogin(getToken()).then(res => {
       if (res.code !== 200) {
         removeToken()
         this.$message.error(res.msg);
-        window.location.href='/'
+        window.location.href = '/'
       }
       console.log(res.data)
       setCurrentUser(res.data)
@@ -94,14 +91,17 @@ export default {
     }).catch(err => {
       removeToken()
       this.$message.error(err)
-      window.location.href='/'
+      window.location.href = '/'
     })
+    setTimeout(() => {
+      this.$store.dispatch('chat/connect');
+    }, 1000)
   },
   methods: {
     changeMenu(index) {
       this.activeMenu = index;
     },
-    logout(){
+    logout() {
       this.$confirm('确定要退出登录吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -109,20 +109,40 @@ export default {
       }).then(() => {
         this.$message.success('退出成功')
         removeToken()
-        setTimeout(()=>{
-          window.location.href='/'
-        },1000)
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 1000)
       }).catch(() => {
         this.$message.info('取消登出')
       });
     },
     handleNavigateToHome() {
-          this.changeMenu('Home'); // 切换到首页
-          navigateToHome(); // 发送首页数据请求
-    }
+      this.changeMenu('Home'); // 切换到首页
+      navigateToHome(); // 发送首页数据请求
+    },
+
   },
   beforeDestroy() {
     tokenLogout(getToken())
+  },
+  computed: {
+    currentComponent() {
+      return this.componentsMap[this.activeMenu];
+    },
+    newState() {
+      return this.$store.state.chat.unreadStats;
+    }
+  },
+  watch: {
+    newState(newval,oldval){
+      console.log("123")
+      console.log(newval)
+      if (newval) {
+        setTimeout(()=>{
+          this.bellState = newval.total==0
+        },200)
+      }
+    }
   }
 };
 </script>
@@ -194,6 +214,7 @@ export default {
 .full-width-button:focus {
   outline: none; /* 移除焦点边框 */
 }
+
 .el-dropdown-menu {
   min-width: 120px;
   text-align: right; /* 文字右对齐 */
@@ -204,6 +225,7 @@ export default {
   display: flex;
   justify-content: flex-end; /* 内容右对齐 */
 }
+
 .item {
   margin-top: 10px;
   margin-right: 40px;

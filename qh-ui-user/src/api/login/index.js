@@ -90,3 +90,10 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+export function getOnlineUsers(){
+    return request({
+        url: '/login/getOnlineUsers',
+        method: 'get'
+    })
+}

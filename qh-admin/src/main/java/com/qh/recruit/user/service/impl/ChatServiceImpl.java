@@ -10,6 +10,7 @@ import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.user.domain.LoginDto;
 import com.qh.recruit.user.service.ChatService;
 import com.qh.recruit.user.util.UserHolder;
+import com.qh.recruit.user.ws.ChatWebSocketHandler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +28,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Resource
     private ICommunicateService communicateService;
+
+    @Resource
+    private ChatWebSocketHandler chatWebSocketHandler;
 
     @Override
     public List<LoginDto> listWhos() {
@@ -47,6 +51,11 @@ public class ChatServiceImpl implements ChatService {
     public AjaxResult sendChat(Communicate communicate) {
         int i = communicateService.insertCommunicate(communicate);
         if (i > 0) {
+            try {
+                chatWebSocketHandler.sendText(communicate);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             return AjaxResult.success("发送成功");
         } else {
             return AjaxResult.error("发送失败");

@@ -19,22 +19,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author ruoyi
  */
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
-public class RuoYiApplication implements WebMvcConfigurer
+public class RuoYiApplication
 {
 
-    private static RecommendServiceImpl recommendService;
     public static void main(String[] args)
     {
         SpringApplication.run(RuoYiApplication.class, args);
-        ApplicationContext context = SpringUtil.getApplicationContext();
-        recommendService= context.getBean(RecommendServiceImpl.class);
         System.out.println("启航 启动完毕");
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor())
-                .addPathPatterns("/jobSeeker/**")
-                .addPathPatterns("/etp/**");
     }
 }
