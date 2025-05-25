@@ -124,4 +124,12 @@ public class EnterpriseController extends BaseController {
         return success(tagService.selectTagById(id));
     }
 
+    @GetMapping("/{id}")
+    public AjaxResult getEtpInfo(@PathVariable("id") Long id){
+        return success(etpService.selectEtpById(id));
+    }
+    @PutMapping
+    public AjaxResult updateEtp(@RequestBody Etp etp){
+        return toAjax(etpService.updateEtp(etp));
+    }
 }

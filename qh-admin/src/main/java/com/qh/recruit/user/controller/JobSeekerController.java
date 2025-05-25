@@ -66,8 +66,8 @@ public class JobSeekerController extends BaseController {
 
     @GetMapping("/search")
     public TableDataInfo search(@RequestParam(value = "keyword",defaultValue = "all") String keyword,Integer pageNum,Integer pageSize){
-        if(keyword.equals("all")){
-            return null;
+        if("all".equals(keyword)){
+            keyword="";
         }
         TableDataInfo tableDataInfo=new TableDataInfo();
         tableDataInfo.setRows(userJobService.getSearchJobList(keyword,(pageNum-1)*pageSize,pageSize));
