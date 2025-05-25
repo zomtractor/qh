@@ -58,7 +58,7 @@ export function changeInterviewStatus(interviewId, status) {
 
   export function joblist(query) {
     return request({
-      url: '/jobSeeker/list',
+      url: '/jobSeeker/job/list',
       method: 'get',
       params: query
     })

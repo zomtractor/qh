@@ -57,6 +57,10 @@
               <span>{{ parseTime(scope.row.time) }}</span>
             </template>
           </el-table-column>
+           <el-table-column label="状态" align="center" key="status_bak" prop="status_bak" v-if="columns[4].visible"
+            width="120" >
+            
+          </el-table-column>
           <el-table-column label="通过" align="center" key="interviewStatus" prop="interviewStatus" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.interviewStatus" active-value="通过" inactive-value="不通过"
@@ -106,7 +110,7 @@
           <el-col :span="12">
             <el-form-item label="通过" prop="interviewStatus">
               <el-radio-group v-model="form.interviewStatus">
-                <el-radio v-for="dict in ['通过', '不通过']" :key="dict" :label="dict">{{ dict }}</el-radio>
+                <el-radio v-for="dict in ['通过', '不通过','待面试']" :key="dict" :label="dict">{{ dict }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -224,7 +228,8 @@ export default {
           { required: true, message: "岗位名称不能为空", trigger: "blur" }
         ]
 
-      }
+      },
+      userInfo:{}
     };
   },
   watch: {
@@ -232,10 +237,11 @@ export default {
   },
   created() {
     let that = this
+    that.userInfo = JSON.parse(localStorage.getItem("currentUser"));
     joblist().then(res => {
       that.jobList = res.rows
     })
-    etplist().then(res => {
+    etplist({userId:that.userInfo.id}).then(res => {
       that.etpList = res.rows
     })
     userlist().then(res => {
@@ -249,6 +255,10 @@ export default {
       this.loading = true;
       listInterview(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.interviewList = response.rows;
+         this.interviewList.map(item=>{
+            item["status_bak"] = item.interviewStatus
+
+         })
         this.total = response.total;
         this.loading = false;
       }
@@ -258,6 +268,7 @@ export default {
     // 面试状态修改
     handleStatusChange(row) {
       this.$modal.confirm('确认要"' + row.interviewStatus + '""' + row.userName + '"面试吗？').then(function () {
+        row.status_bak =  row.interviewStatus
         return updateInterview(row);
       }).then(() => {
         this.$modal.msgSuccess(row.interviewStatus + "成功");
