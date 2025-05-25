@@ -3,11 +3,13 @@ package com.qh.recruit.user.controller;
 
 import com.qh.recruit.common.core.controller.BaseController;
 import com.qh.recruit.common.core.domain.AjaxResult;
+import com.qh.recruit.common.core.page.TableDataInfo;
 import com.qh.recruit.user.domain.NLoginForm;
 import com.qh.recruit.user.service.LoginService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/login")
@@ -41,6 +43,10 @@ public class LoginController extends BaseController {
     @PostMapping("/register")
     public AjaxResult register(@RequestBody NLoginForm loginForm) {
         return loginService.register(loginForm.getRole(),loginForm.getUsername(), loginForm.getPassword(),loginForm.getEmail(),loginForm.getPhone() ,loginForm.getVerifyCode());
+    }
+    @GetMapping("/getOnlineUsers")
+    public TableDataInfo getOnlineUsers(){
+        return new TableDataInfo();
     }
 
 }

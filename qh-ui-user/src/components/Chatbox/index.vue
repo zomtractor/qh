@@ -9,8 +9,10 @@
             :key="contact.id"
             :index="String(contact.id)"
         >
-          <image-preview :src="contact.avatar" size="small" class="avatar" />
+          <image-preview :src="contact.avatar" size="small" class="avatar"/>
           <span class="contact-name">{{ contact.name }}</span>
+          <span style="color: #ff4949" v-if="hasKey(`${contact.id}`)">
+            &nbsp;&nbsp;&nbsp;●</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -28,7 +30,7 @@
               {{ msg.content }}
             </template>
             <template v-else-if="msg.contentType === 'image'">
-              <image-preview :src="msg.content" class="msg-image" />
+              <image-preview :src="msg.content" class="msg-image"/>
             </template>
             <template v-else-if="msg.contentType === 'file'">
               <el-button
@@ -36,7 +38,8 @@
                   type="text"
                   icon="el-icon-download"
                   @click="handleDownload(msg.content)"
-              >下载附件</el-button>
+              >下载附件
+              </el-button>
             </template>
           </div>
         </div>
@@ -55,15 +58,15 @@
               width="200"
               trigger="hover"
           >
-            <image-upload :limit="1" v-model="input.image" @on-success="uploadImg" />
-            <el-button slot="reference" icon="el-icon-picture" circle />
+            <image-upload :limit="1" v-model="input.image" @on-success="uploadImg"/>
+            <el-button slot="reference" icon="el-icon-picture" circle/>
           </el-popover>
           <el-popover
               placement="top-start"
               width="200"
               trigger="hover"
           >
-            <file-upload :limit="1" v-model="input.file" @on-success="uploadFile" />
+            <file-upload :limit="1" v-model="input.file" @on-success="uploadFile"/>
             <el-button slot="reference" icon="el-icon-paperclip" circle/>
           </el-popover>
           <el-button type="primary" @click="sendText">发送</el-button>
@@ -77,6 +80,7 @@
 import {getCurrentUser} from "@/utils/local";
 import {listChats, listContact, postMsg} from "@/api/jobseeker/communicate";
 import {download} from "@/utils/request";
+
 export default {
   name: "Chatbox",
   data() {
@@ -90,19 +94,17 @@ export default {
         image: '',
         file: '',
       },
-      contacts: [
-      ],
+      contacts: [],
       activeContactId: 1,
-      messages: [
-      ],
+      messages: [],
     };
   },
   methods: {
     fetchContacts() {
-      listContact().then(resp=>{
+      listContact().then(resp => {
         if (resp.code === 200) {
           this.contacts = resp.rows;
-          if(this.contacts.length>0) {
+          if (this.contacts.length > 0) {
             this.activeContactId = this.contacts[0].id;
             this.fetchMessages(this.activeContactId);
           }
@@ -110,23 +112,26 @@ export default {
         } else {
           this.$message.error(resp.msg);
         }
-      }).catch(err=>{
+      }).catch(err => {
         this.$message.error(err);
       })
     },
 
     fetchMessages(refId) {
-      listChats(refId).then(resp=>{
+      console.log('fetch')
+      listChats(refId).then(resp => {
         if (resp.code === 200) {
           this.messages = resp.rows;
+          this.$store.dispatch('chat/readSomeone', refId)
         } else {
           this.$message.error(resp.msg);
         }
-      }).catch(err=>{
+      }).catch(err => {
         this.$message.error(err);
       })
     },
     handleSelect(contactId) {
+      this.activeContactId = contactId;
       this.fetchMessages(contactId);
     },
 
@@ -142,24 +147,24 @@ export default {
         content: url,
         contentType: type,
       };
-      postMsg(newMessage).then(resp=>{
+      postMsg(newMessage).then(resp => {
         if (resp.code === 200) {
           this.$message.success("发送成功");
           this.messages.push(newMessage);
         } else {
           this.$message.error(resp.msg);
         }
-      }).catch(err=>{
+      }).catch(err => {
         this.$message.error(err);
       })
     },
     sendText() {
       this.sendMedia(this.input.text, "text");
     },
-    uploadImg(){
+    uploadImg() {
       this.sendMedia(this.input.image, "image");
     },
-    uploadFile(){
+    uploadFile() {
       this.sendMedia(this.input.file, "file");
     },
     handleDownload(url) {
@@ -169,16 +174,43 @@ export default {
       const a = document.createElement('a')
       a.setAttribute('download', name)
       a.setAttribute('target', '_blank')
-      a.setAttribute('href', '/dev-api'+url)
+      a.setAttribute('href', '/dev-api' + url)
       a.setAttribute('content-type', 'application/octet-stream')
       a.style.display = 'none'
       a.click()
+    },
+    hasKey(id){
+      return this.newState[id]
     }
   },
   mounted() {
     this.currentUser = getCurrentUser();
     this.fetchContacts();
   },
+  computed: {
+    newMessages() {
+      return this.$store.state.chat.newMessages;
+    },
+    newState(){
+      return this.$store.state.chat.unreadStats;
+    }
+  },
+  watch: {
+    newMessages(newMsg, oldMsg) {
+      const id = getCurrentUser().id;
+      const latest = newMsg[newMsg.length - 1];
+      if (latest && latest.receiverId === id) {
+        console.log('新消息来自该用户：', latest.content);
+        // this.activeContactId = latest.posterId
+        // this.handleSelect(latest.posterId)
+        setTimeout(() => {
+          console.log(this.activeContactId)
+          console.log(latest.posterId)
+          if(this.activeContactId == latest.posterId) this.messages.push(latest)
+        }, 500)
+      }
+    },
+  }
 };
 </script>
 
@@ -194,12 +226,15 @@ export default {
   border-right: 1px solid #ccc;
   background: #fff;
 }
-.el-menu{
+
+.el-menu {
   align-items: start;
 }
-.el-menu-item{
+
+.el-menu-item {
   display: flex;
   justify-content: flex-start;
+  overflow: scroll;
 }
 
 .chat-window {
@@ -207,6 +242,8 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  height: 80vh;
+  overflow: scroll;
 }
 
 .messages {
@@ -258,16 +295,24 @@ export default {
   max-width: 150px;
   border-radius: 4px;
 }
+
 .avatar {
   margin-right: 8px;
   width: 40px;
   height: 40px;
 }
+
 .contact-name {
   vertical-align: middle;
 }
+
 .hyper-link {
   color: #409eff;
   text-decoration: none;
+}
+
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
 }
 </style>
