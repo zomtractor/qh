@@ -91,9 +91,12 @@ public class RecommendServiceImpl implements RecommendService {
         String priority = query.getPriority();
         List<UserJob> recommend = new ArrayList<>();
 
-        if(Objects.equals(query.getCity(), "")){
+
+        if(query.getCity() == null || query.getCity().isEmpty()){
+            //TODO:分页
             recommend = userJobMapper.selectJoball();
-        }else if(!query.getCity().isEmpty()){
+        }
+        else{
             int[] ints = salaryBeginAndEnd(query.getSalary());
             long index = userJobMapper.searchCategoryId(query.getIndustry());
              recommend = userJobMapper.confirms(query.getCity(), String.valueOf(index),ints[0], ints[1]);

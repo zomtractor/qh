@@ -114,7 +114,7 @@ export default {
       salaryRange: null,
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 8,
         name: null,
         keywords: null,
         categoryIds: null,

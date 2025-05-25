@@ -28,8 +28,8 @@ public class RecommendController  {
     /**
      * 获取推荐职位列表
      */
-    @PostMapping("/recommend/list")
-    public AjaxResult list(@RequestBody JobRecommendQuery query) {
+    @GetMapping("/recommend/list")
+    public AjaxResult list(JobRecommendQuery query) {
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(UserHolder.getUser().getId());
         return recommendService.getRecommendJobs(query,loginUser);

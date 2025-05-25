@@ -4,8 +4,8 @@ import request from '@/utils/request'
 export function getRecommendJobs(data) {
   return request({
     url: '/jobSeeker/recommend/list',
-    method: 'post',
-    data
+    method: 'get',
+    params: data
   })
 }
 
