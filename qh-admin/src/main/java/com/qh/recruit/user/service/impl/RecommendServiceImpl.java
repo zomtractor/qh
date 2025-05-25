@@ -96,7 +96,7 @@ public class RecommendServiceImpl implements RecommendService {
         }else if(!query.getCity().isEmpty()){
             int[] ints = salaryBeginAndEnd(query.getSalary());
             long index = userJobMapper.searchCategoryId(query.getIndustry());
-             recommend = userJobMapper.confirm(query.getCity(), String.valueOf(index),ints[0], ints[1]);
+             recommend = userJobMapper.confirms(query.getCity(), String.valueOf(index),ints[0], ints[1]);
         }
         if (priority.equals("skill")) {
             recommendStrategy = new SkillsStrategy(recommendService);

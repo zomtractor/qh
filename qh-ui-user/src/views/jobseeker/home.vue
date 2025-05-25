@@ -119,8 +119,13 @@ export default {
   },
   methods: {
     handleSearch() {
+      this.city = ''; // 重置城市选择
+      this.salary = ''; // 重置薪资选择
+      this.industry = ''; // 重置行业选择
       search({
         keyword: this.searchKeyword,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
       }).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
         this.total = res.total;
@@ -130,8 +135,11 @@ export default {
       const params = {
         city: this.city,
         salary: this.salary,
-        industry: this.industry
+        industry: this.industry,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
       };
+      this.searchKeyword = ''; // 重置搜索框内容
       confirmFilters(params).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
         this.total = res.total;
@@ -147,7 +155,13 @@ export default {
     },
     handlePageChange(page) {
       this.currentPage = page;
-      this.getJobList();
+      if (this.searchKeyword) {
+        this.handleSearch();
+      } else if (this.city || this.salary || this.industry) {
+        this.handleConfirm();
+      } else {
+        this.getJobList();
+      }
     },
     getJobList() {
       page({

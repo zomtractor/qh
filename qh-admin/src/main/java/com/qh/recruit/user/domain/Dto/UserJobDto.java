@@ -39,25 +39,6 @@ public class UserJobDto extends BaseEntity
         return serialVersionUID;
     }
 
-    @Override
-    public String toString() {
-        return "UserJobDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", salary='" + salary + '\'' +
-                ", city='" + city + '\'' +
-                ", requirement='" + requirement + '\'' +
-                ", etpId=" + etpId +
-                ", categoryIds='" + categoryIds + '\'' +
-                ", tagIds='" + tagIds + '\'' +
-                ", popularity=" + popularity +
-                ", status=" + status +
-                ", version=" + version +
-                ", industry='" + industry + '\'' +
-                '}';
-    }
-
     public String getSalary() {
         return salary;
     }
@@ -97,10 +78,51 @@ public class UserJobDto extends BaseEntity
     /** $column.columnComment */
     private Integer status;
 
+    @Override
+    public String toString() {
+        return "UserJobDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", salary='" + salary + '\'' +
+                ", city='" + city + '\'' +
+                ", requirement='" + requirement + '\'' +
+                ", etpId=" + etpId +
+                ", categoryIds='" + categoryIds + '\'' +
+                ", tagIds='" + tagIds + '\'' +
+                ", popularity=" + popularity +
+                ", status=" + status +
+                ", version=" + version +
+                ", industry='" + industry + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
+
     /** $column.columnComment */
     private Long version;
 
     private String industry;
+
+    private Integer pageNum;
+
+    private Integer pageSize;
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
 
     public void setId(Long id)
     {
