@@ -184,7 +184,7 @@ export default {
   data() {
     return {
       default_img: require('@/assets/default-avatar.jpg'),
-      activeTab: '已通过',
+
       
       userInfo: {
         id:1,
