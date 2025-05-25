@@ -37,17 +37,30 @@ public class UserJobServiceImpl implements UserJobService {
     }
 
     @Override
-    public List<UserJob> getSearchJobList(String keyword) {
-        List<UserJob> jobs = jobMapper.searchJobList(keyword);
+    public Integer searchJobCount(String keyword) {
+        return jobMapper.searchJobCount(keyword);
+    }
+
+    @Override
+    public List<UserJob> getSearchJobList(String keyword,Integer pageNum,Integer pageSize) {
+        List<UserJob> jobs = jobMapper.searchJobList(keyword,pageNum,pageSize);
         return jobs;
     }
 
     @Override
-    public List<UserJob> confirm(String location, String category, String salary) {
+    public Integer confirmCount(String location, String category, String salary) {
         Integer Id = userJobService.searchCategoryId(category);
         int[] result=userJobService.salaryBeginAndEnd(salary);
         String categoryId=String.valueOf(Id);
-        List<UserJob> jobs = jobMapper.confirm(location, categoryId, result[0], result[1]);
+        return jobMapper.confirmCount(location,categoryId,result[0], result[1]);
+    }
+
+    @Override
+    public List<UserJob> confirm(String location, String category, String salary,Integer pageNum,Integer pageSize) {
+        Integer Id = userJobService.searchCategoryId(category);
+        int[] result=userJobService.salaryBeginAndEnd(salary);
+        String categoryId=String.valueOf(Id);
+        List<UserJob> jobs = jobMapper.confirm(location, categoryId, result[0], result[1],pageNum,pageSize);
         return jobs;
     }
 

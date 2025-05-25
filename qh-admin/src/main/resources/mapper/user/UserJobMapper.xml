@@ -25,17 +25,30 @@
         limit 0,#{pageSize}
     </select>
 
+    <select id="searchJobCount" resultType="Integer">
+        SELECT count(*)
+        FROM tb_job
+        where name LIKE CONCAT('%', #{arg0}, '%')
+    </select>
+
     <select id="searchJobList" resultType="UserJob">
         SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
                category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,
                update_time AS updateTime, status, version
         FROM tb_job
-        where name=#{keyword}
+        where name LIKE CONCAT('%', #{arg0}, '%')
+        limit #{arg1},#{arg2}
     </select>
 
     <select id="searchCategoryId" resultType="Integer">
         select id from tb_category
         where name=#{category}
+    </select>
+
+    <select id="confirmCount" resultType="Integer">
+        select count(*)
+        FROM tb_job
+        where location = #{arg0} and category_ids LIKE CONCAT('%', #{arg1}, '%') and salary_desc between #{arg2} and #{arg3}
     </select>
 
     <select id="confirm" resultType="UserJob">
@@ -44,7 +57,9 @@
                update_time AS updateTime, status, version
         FROM tb_job
         where location = #{arg0} and category_ids LIKE CONCAT('%', #{arg1}, '%') and salary_desc between #{arg2} and #{arg3}
+        limit #{arg4},#{arg5}
     </select>
+
     <select id="selectJoball" resultType="com.qh.recruit.user.domain.UserJob">
         SELECT id, name, description, salary_desc AS salaryDesc, location, requirement, etp_id AS etpId,
                category_ids AS categoryIds, tag_ids AS tagIds, popularity, create_time AS createTime,

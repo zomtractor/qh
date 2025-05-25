@@ -121,6 +121,8 @@ export default {
     handleSearch() {
       search({
         keyword: this.searchKeyword,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
       }).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
         this.total = res.total;
@@ -130,7 +132,9 @@ export default {
       const params = {
         city: this.city,
         salary: this.salary,
-        industry: this.industry
+        industry: this.industry,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
       };
       confirmFilters(params).then(res => {
         this.jobs = res.rows.sort((a, b) => b.popularity - a.popularity);
@@ -147,7 +151,13 @@ export default {
     },
     handlePageChange(page) {
       this.currentPage = page;
-      this.getJobList();
+      if (this.searchKeyword) {
+        this.handleSearch();
+      } else if (this.city || this.salary || this.industry) {
+        this.handleConfirm();
+      } else {
+        this.getJobList();
+      }
     },
     getJobList() {
       page({

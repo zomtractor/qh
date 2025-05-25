@@ -53,21 +53,27 @@ public class JobSeekerController extends BaseController {
     @GetMapping("/userList")
     public TableDataInfo getUserList() {
         startPage();
-
         return getDataTable(userService.selectUserList(null));
     }
 
     @GetMapping("/search")
-    public TableDataInfo search(@RequestParam(value = "keyword",defaultValue = "all") String keyword){
+    public TableDataInfo search(@RequestParam(value = "keyword",defaultValue = "all") String keyword,Integer pageNum,Integer pageSize){
         if(keyword.equals("all")){
             return null;
         }
-        return getDataTable(userJobService.getSearchJobList(keyword));
+        TableDataInfo tableDataInfo=new TableDataInfo();
+        tableDataInfo.setRows(userJobService.getSearchJobList(keyword,(pageNum-1)*pageSize,pageSize));
+        tableDataInfo.setTotal(userJobService.searchJobCount(keyword));
+        return tableDataInfo;
     }
 
     @PostMapping("/confirm")
     public TableDataInfo confirm(@RequestBody UserJobDto userJobDto) {
-        return getDataTable(userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary()));
+        TableDataInfo tableDataInfo=new TableDataInfo();
+        tableDataInfo.setRows(userJobService.confirm(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary(),
+                (userJobDto.getPageNum()-1)*userJobDto.getPageSize(),userJobDto.getPageSize()));
+        tableDataInfo.setTotal(userJobService.confirmCount(userJobDto.getCity(), userJobDto.getIndustry(),userJobDto.getSalary()));
+        return tableDataInfo;
     }
 
     @PostMapping("/get_info")

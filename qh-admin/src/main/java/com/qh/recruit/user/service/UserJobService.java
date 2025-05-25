@@ -13,9 +13,13 @@ public interface UserJobService {
 
     public List<UserJob> getJobList(int pageSzie);
 
-    public List<UserJob> getSearchJobList(String keyword);
+    public Integer searchJobCount(String keyword);
 
-    public List<UserJob> confirm(String location,String category,String salary);
+    public List<UserJob> getSearchJobList(String keyword,Integer pageNum,Integer pageSize);
+
+    public Integer confirmCount(String location, String category, String salary);
+
+    public List<UserJob> confirm(String location,String category,String salary,Integer pageNum,Integer pageSize);
 
     public Integer searchCategoryId(String category);
 
