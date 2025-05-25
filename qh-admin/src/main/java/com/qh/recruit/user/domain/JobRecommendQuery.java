@@ -8,37 +8,15 @@ import lombok.Data;
 @Data
 public class JobRecommendQuery {
 
-
-    /**
-     * 工作城市
-     */
-    private String city;
-
-    /**
-     * 期望薪资
-     */
-    private String salary;
-
-    /**
-     * 公司行业
-     */
-    private String industry;
-
-    /**
-     * 优先技能
-     */
     private String priority;
+    private String keywords;
+    private String location;
+    private Integer salaryLowerBound;
+    private Integer salaryUpperBound;
+    private String categoryIds;
+    private String tagIds;
 
-    /**
-     * 当前页码
-     */
+    // TODO:暂时无用
     private Integer page;
-
-    /**
-     * 每页数量
-     */
     private Integer pageSize;
-
-
-
 }

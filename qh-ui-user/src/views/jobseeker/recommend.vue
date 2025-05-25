@@ -3,14 +3,14 @@
     <!-- 筛选条件 -->
     <div class="filter-section">
       <div class="filter-tags">
-        <el-radio-group v-model="priority" @change="handlePriorityChange">
+        <el-radio-group v-model="queryParams.priority" @change="handlePriorityChange">
           <el-radio label="skill">优先技能</el-radio>
           <el-radio label="hot">优先热度</el-radio>
           <el-radio label="welfare">优先福利</el-radio>
         </el-radio-group>
       </div>
       <div class="filter-selects">
-        <el-select v-model="city" placeholder="选择城市">
+        <el-select v-model="queryParams.location" placeholder="选择城市" clearable>
           <el-option
             v-for="item in cities"
             :key="item"
@@ -18,21 +18,23 @@
             :value="item"
           />
         </el-select>
-        <el-select v-model="salary" placeholder="选择薪资">
+        <el-select v-model="salaryRange" placeholder="选择薪资" clearable>
           <el-option
-            v-for="item in salaries"
-            :key="item"
-            :label="item"
-            :value="item"
+              v-for="item in salaries"
+              :key="item.id"
+              :label="item.desc"
+              :value="item.range"
           />
         </el-select>
-        <el-select v-model="industry" placeholder="选择公司行业">
-          <el-option
-            v-for="item in industries"
-            :key="item"
-            :label="item"
-            :value="item"
-          />
+        <el-select v-model="queryCategoryList" placeholder="请选择分类" multiple
+                   :loading="loading" @visible-change="getCategoryList">
+          <el-option v-for="category in categoryList" :key="category.id" :label="category.name"
+                     :value="category.id"></el-option>
+        </el-select>
+        <el-select v-model="queryTagList" placeholder="请选择标签" multiple
+                   :loading="loading" @visible-change="getTagList">
+          <el-option v-for="tag in tagList" :key="tag.id" :label="tag.name"
+                     :value="tag.id"></el-option>
         </el-select>
         <el-button type="primary" @click="handleFilter">筛选</el-button>
       </div>
@@ -40,7 +42,7 @@
 
     <!-- 职位卡片 -->
     <div class="job-list">
-      <div class="job-card" v-for="(item, index) in jobs" :key="index">
+      <div class="job-card" v-for="(item, index) in jobs.slice(0,20)" :key="index">
         <div class="job-header">
           <div class="job-title">{{ item.userJob.name }}</div>
           <div class="match-score">匹配度：{{ item.score.toFixed(2) }}</div>
@@ -63,107 +65,80 @@
         </div>
       </div>
     </div>
-
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="total"
-        :current-page.sync="currentPage"
-        @current-change="handlePageChange">
-      </el-pagination>
-    </div>
   </div>
 </template>
 
 <script>
 import { getRecommendJobs, communicateWithRecruiter, submitResumeToJob } from '@/api/recommend/recommend'
+import { listCategory } from "@/api/etp/category";
+import { listTag } from "@/api/etp/tag";
+
 export default {
   data() {
     return {
-      priority: 'skill', // 推荐算法
-        city: '',
-        salary: '',
-        industry: '',
       cities: [
         '北京', '上海', '广州', '深圳', '天津', '重庆', '杭州', '南京', '武汉', '成都',
         '西安', '长沙', '沈阳', '哈尔滨', '长春', '济南', '郑州', '合肥', '福州', '南昌',
         '昆明', '贵阳', '南宁', '太原', '石家庄', '兰州', '西宁', '银川', '乌鲁木齐', '海口'
       ],
       salaries: [
-        '5k以下', '5-10k', '10-15k', '15k以上'
+        {id:1, desc:'5k以下', range:'0,5000'},
+        {id:2, desc:'5-10k', range:'5000,10000'},
+        {id:3, desc:'10-15k', range:'10000,15000'},
+        {id:4, desc:'15k以上', range:'15000,0'}
       ],
-      industries: [
-        '国企', '外企', '民企', '事业单位', '银行', '央企'
-      ],
+      loading: true,
       currentPage: 1,
       pageSize: 8,
       total: 0,
-      jobs: [
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        },
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        },
-        {
-          title: 'Python开发工程师',
-          company: '测试公司',
-          size: '人数：9999以上',
-          skills: ['python', '后端开发', 'MySQL'],
-          description: [
-            '负责策划相关工具链构建及维护',
-            '负责公司内自动化开发测试环境搭建及维护',
-            '负责游戏运营相关大数据分析工具及后台支撑'
-          ],
-          salary: '薪资：7k-8k',
-          location: '地点：福州'
-        }
-      ]
+      jobs: [],
+      categoryList: [],
+      tagList: [],
+      queryCategoryList: [],
+      queryTagList: [],
+      salaryRange: null,
+      queryParams: {
+        page: null,
+        pageSize: null,
+        priority: 'skill',
+        keywords: null,
+        categoryIds: null,
+        tagIds: null,
+        salaryLowerBound: null,
+        salaryUpperBound: null,
+        location: null,
+      },
     }
   },
   methods: {
+    /** 查询分类列表 */
+    getCategoryList() {
+      this.loading = true;
+      listCategory({}).then(response => {
+        this.categoryList = response.rows;
+        this.loading = false;
+      });
+    },
+    /** 查询标签列表 */
+    getTagList() {
+      this.loading = true;
+      listTag({}).then(response => {
+        this.tagList = response.rows;
+        this.loading = false;
+      });
+    },
     // 获取职位列表数据
     async fetchJobs() {
       try {
-        const params = {
-          page: this.currentPage,
-          pageSize: this.pageSize,
-          city: this.city,
-          priority: this.priority,
-          salary: this.salary,
-          industry: this.industry,
+        if (this.salaryRange != null) {
+          this.queryParams.salaryLowerBound = this.salaryRange.split(',')[0];
+          this.queryParams.salaryUpperBound = this.salaryRange.split(',')[1];
         }
-        const res = await getRecommendJobs(params)
-        if (res.data && res.data.list) {
-          this.jobs = res.data.list
-          this.total = res.data.total || 0
-        } else {
-          this.jobs = res.data || []
-          this.total = this.jobs.length
-        }
-
+        this.queryParams.categoryIds = this.queryCategoryList.join(",");
+        this.queryParams.tagIds = this.queryTagList.join(",");
+        const res = await getRecommendJobs(this.queryParams)
+        this.jobs = res.data;
+        this.total = res.total;
       } catch (error) {
         this.$message.error('获取职位列表失败')
         console.error('获取职位列表失败:', error)
@@ -171,7 +146,6 @@ export default {
     },
     // 处理优先条件变化
     async handlePriorityChange() {
-      this.currentPage = 1
       await this.fetchJobs()
       this.$message.success(`已切换到${this.getPriorityText()}推荐模式`)
     },
@@ -182,27 +156,22 @@ export default {
         hot: '优先热度',
         welfare: '优先福利'
       }
-      return priorityMap[this.priority] || ''
+      return priorityMap[this.queryParams.priority] || ''
     },
     // 处理筛选条件
     async handleFilter() {
-      this.currentPage = 1
-      await this.fetchJobs()
-    },
-    // 处理分页变化
-    async handlePageChange(page) {
-      this.currentPage = page
+      this.queryParams.page = 1
       await this.fetchJobs()
     },
     // 处理沟通请求
     async communicate(job) {
       try {
-        await communicateWithRecruiter({ jobId: job.id })
+        await communicateWithRecruiter({jobId: job.id})
         this.$message.success('已发起沟通请求')
         // 这里可以添加跳转到聊天页面的逻辑
         this.$router.push({
           path: '/chat',
-          query: { jobId: job.id }
+          query: {jobId: job.id}
         })
       } catch (error) {
         this.$message.error('发起沟通失败')
@@ -212,7 +181,7 @@ export default {
     // 处理简历投递
     async submitResume(job) {
       try {
-        await submitResumeToJob({ jobId: job.id })
+        await submitResumeToJob({jobId: job.id})
         this.$message.success('简历投递成功')
       } catch (error) {
         this.$message.error('简历投递失败')
@@ -223,7 +192,7 @@ export default {
   created() {
     this.fetchJobs()
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

@@ -2,6 +2,7 @@ package com.qh.recruit.user.util.strategy;
 
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.domain.model.LoginUser;
+import com.qh.recruit.user.domain.Dto.UserJobDto;
 import com.qh.recruit.user.domain.UserJob;
 
 import java.util.List;
@@ -13,5 +14,5 @@ import java.util.List;
  */
 public interface RecommendStrategy {
 
-    AjaxResult recommend(LoginUser loginUser,List<UserJob> userJobs);
+    AjaxResult recommend(LoginUser loginUser,List<UserJobDto> userJobs);
 }

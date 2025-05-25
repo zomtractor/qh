@@ -2,6 +2,7 @@ package com.qh.recruit.user.util.strategy;
 
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.domain.model.LoginUser;
+import com.qh.recruit.user.domain.Dto.UserJobDto;
 import com.qh.recruit.user.domain.JobScore;
 import com.qh.recruit.user.domain.UserJob;
 import com.qh.recruit.user.service.RecommendService;
@@ -28,7 +29,7 @@ public class SkillsStrategy  implements RecommendStrategy{
 
 
     @Override
-    public AjaxResult recommend(LoginUser loginUser,List<UserJob> userJobs) {
+    public AjaxResult recommend(LoginUser loginUser,List<UserJobDto> userJobs) {
 
             int size = userJobs.size();
                 // 计算职位得分并排序

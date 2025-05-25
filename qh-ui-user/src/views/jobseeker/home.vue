@@ -115,7 +115,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 8,
-        name: null,
         keywords: null,
         categoryIds: null,
         tagIds: null,
@@ -348,6 +347,4 @@ export default {
   color: #4e5969;
   line-height: 1.6;
 }
-</style>
-
 </style>

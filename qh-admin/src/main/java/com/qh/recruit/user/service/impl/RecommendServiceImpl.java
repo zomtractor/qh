@@ -4,6 +4,7 @@ import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.mapper.ResumeMapper;
 import com.qh.recruit.common.core.domain.AjaxResult;
 import com.qh.recruit.common.core.domain.model.LoginUser;
+import com.qh.recruit.user.domain.Dto.UserJobDto;
 import com.qh.recruit.user.domain.JobRecommendQuery;
 
 import com.qh.recruit.user.domain.ResumeJob;
@@ -87,20 +88,39 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
 
+    /**
+     * 获取推荐岗位列表
+     * ①筛选
+     * ②算法排序
+     * @param query 查询条件
+     * @param loginUser
+     * @return
+     */
     public AjaxResult getRecommendJobs(JobRecommendQuery query, LoginUser loginUser) {
+        // 手动构造入参，获取岗位列表
+        UserJobDto queryParam = new UserJobDto();
+        if (query.getKeywords() != null && !query.getKeywords().isEmpty()) {
+            queryParam.setKeywords(query.getKeywords());
+        }
+        if (query.getLocation() != null && !query.getLocation().isEmpty()) {
+            queryParam.setLocation(query.getLocation());
+        }
+        if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
+            queryParam.setCategoryIds(query.getCategoryIds());
+        }
+        if (query.getTagIds() != null && !query.getTagIds().isEmpty()) {
+            queryParam.setTagIds(query.getTagIds());
+        }
+        if (query.getSalaryLowerBound() != null) {
+            queryParam.setSalaryLowerBound(query.getSalaryLowerBound());
+        }
+        if (query.getSalaryUpperBound() != null) {
+            queryParam.setSalaryUpperBound(query.getSalaryUpperBound());
+        }
+        List<UserJobDto> recommend = userJobMapper.selectJobList(queryParam);
+
+        // 不同优先级排序
         String priority = query.getPriority();
-        List<UserJob> recommend = new ArrayList<>();
-
-
-        if(query.getCity() == null || query.getCity().isEmpty()){
-            //TODO:分页
-            recommend = userJobMapper.selectJoball();
-        }
-        else{
-            int[] ints = salaryBeginAndEnd(query.getSalary());
-            long index = userJobMapper.searchCategoryId(query.getIndustry());
-             recommend = userJobMapper.confirms(query.getCity(), String.valueOf(index),ints[0], ints[1]);
-        }
         if (priority.equals("skill")) {
             recommendStrategy = new SkillsStrategy(recommendService);
             return recommendStrategy.recommend(loginUser, recommend);
