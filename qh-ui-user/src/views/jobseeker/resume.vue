@@ -6,7 +6,8 @@
       <div class="profile-section">
         <div class="profile-header">
           <div class="avatar">
-            <img :src="userInfo.avatarFileId || default_img" alt="用户头像">
+            <image-preview :src="userInfo.avatarFileId || default_img" alt="用户头像" width="100" height="100" />
+            <!-- <img :src="userInfo.avatarFileId || default_img" alt="用户头像"> -->
           </div>
           <div class="info">
             <h2>{{ userInfo.name }}</h2>
@@ -27,27 +28,15 @@
       <div class="attachment-section">
         <div class="section-header">
           <h3>附件管理</h3>
-          <el-upload
-            class="upload-btn"
-            action="/api/upload"
-            :show-file-list="false"
-            :on-success="handleUploadSuccess"
-            :before-upload="beforeUpload"
-          >
-            <el-button type="primary" size="small">
-              <i class="el-icon-upload"></i>
-              上传文件
-            </el-button>
-          </el-upload>
+          <file-upload
+            v-model="attachments"
+            :file-type="['doc', 'docx', 'pdf']"
+            :limit="5"
+            :file-size="10"
+            @on-success="handleUploadSuccess"
+          />
         </div>
-        <div class="attachment-list">
-          <div v-for="(file, index) in attachments" :key="index" class="attachment-item">
-            <!-- <i class="el-icon-document"></i> -->
-            <!-- <span>{{ file }}</span> -->
-            <image-preview :src="file || default_img" width="100" height="100" />
-            <!-- <span class="file-time">{{ file.time }}</span> -->
-          </div>
-        </div>
+        <!-- 文件列表会由FileUpload组件自动处理和显示 -->
       </div>
     </div>
 
@@ -77,7 +66,8 @@
             </div>
           </div>
           <div class="company-info">
-            <img :src="job.logo || default_img" alt="公司logo">
+            <image-preview :src="job.logo || default_img" alt="用户头像" width="100" height="100" />
+            <!-- <img :src="job.logo || default_img" alt="公司logo"> -->
             <div class="company-meta">
               <!-- <span>{{ job.companyName }}</span> -->
               <!-- <span>人数：{{ job.employeeCount }}+</span> -->
@@ -136,6 +126,15 @@
       :visible.sync="editDialogVisible"
       width="40%">
       <el-form :model="editForm" :rules="rules" ref="editForm" label-width="100px">
+        <el-form-item label="头像" prop="avatar">
+          <file-upload
+            v-model="editForm.avatar"
+            :file-type="['jpg', 'jpeg', 'png']"
+            :limit="1"
+            :file-size="2"
+            @on-success="handleAvatarSuccess"
+          />
+        </el-form-item>
         <el-form-item label="昵称" prop="name">
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
@@ -169,7 +168,7 @@
 </template>
 
 <script>
-
+import FileUpload from '@/components/FileUpload'
 import ImagePreview from '@/components/ImagePreview'
 import { getUserInfo, updateUserInfo,getInterviewInfo,getResumeImgs} from '@/api/jobseeker/resume'
 import { getCurrentUser} from '@/utils/local'
@@ -179,16 +178,16 @@ import { search, confirmFilters,submitResume, navigateToHome } from '@/api/home/
 export default {
   name: 'Message',
   components: {
-    ImagePreview
+    ImagePreview,
+    FileUpload
   },
   data() {
     return {
       default_img: require('@/assets/default-avatar.jpg'),
-
-      
+      activeTab: '已通过',
       userInfo: {
         id:1,
-        avatarFileId: require('@/assets/default-avatar.jpg'),
+        avatar: '',
         name: '昵称',
         education: '硕士',
         age: 25,
@@ -198,7 +197,19 @@ export default {
         jobIntention: '后端开发',
         phone:"1232324",
         email:''
-        
+      },
+      editForm: {
+        avatar: '',
+        gender: 'male',
+        name: '',
+        education: '',
+        age: 18,
+        school: '',
+        major: '',
+        jobIntention: '',
+        salary: '',
+        userId: getCurrentUser().id,
+        email: '',
       },
       attachments: [
         
@@ -238,6 +249,9 @@ export default {
         email: '',
       },
       rules: {
+        avatar: [
+          { required: true, message: '请上传头像', trigger: 'change' }
+        ],
         name: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
@@ -266,7 +280,7 @@ export default {
   created() {
     // userInfo = getUserInfo(userId)
     this.getuserInfo()
-    this.getresumeImgs()
+    // this.getresumeImgs()
     this.getinterviewInfo()
     // console.log(11111)
     // console.log(this.jobList)
@@ -283,28 +297,33 @@ export default {
 
         const res = await getUserInfo(getCurrentUser().id)
         this.userInfo = res.data
-        
-        
-      } catch (error) {
-        this.$message.error('失败')
-        console.error('失败:', error)
-      }
-    },
-
-
-    async getresumeImgs() {
-      try {
-
-        const res = await getResumeImgs(getCurrentUser().id)
-        console.log(getCurrentUser().id)
-        this.attachments = res.data
-        console.log(res.data)
+         this.attachments = res.data.attachmentFileIds
+          .split(',') // 按逗号分割
+          .map(url => url.trim()) // 去除前后空格
+          .filter(url => url.length > 0); 
+        // this.attachments = res.data.attachmentFileIds
+        console.log(this.attachments)
         
       } catch (error) {
         this.$message.error('失败')
         console.error('失败:', error)
       }
     },
+
+
+    // async getresumeImgs() {
+    //   try {
+
+    //     const res = await getResumeImgs(getCurrentUser().id)
+    //     console.log(getCurrentUser().id)
+    //     this.attachments = res.data
+    //     console.log(res.data)
+        
+    //   } catch (error) {
+    //     this.$message.error('失败')
+    //     console.error('失败:', error)
+    //   }
+    // },
 
     async getinterviewInfo() {
       let interview = {
@@ -370,23 +389,31 @@ export default {
       this.editForm = { ...this.userInfo };  // 复制当前用户信息到表单
       this.editDialogVisible = true;
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+    async submitForm(formName) {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          // 这里添加提交表单的逻辑
-          
-          this.editForm.userId = getCurrentUser().id,
-          this.editForm.email = this.userInfo.email
-          this.editForm.gender = this.userInfo.gender
-          updateUserInfo(this.editForm )
-          this.userInfo = { ...this.editForm };  // 更新用户信息
-          this.editDialogVisible = false;
-          this.$message.success('保存成功');
+          try {
+            const res = await updateUserInfo(this.editForm)
+            if (res.code === 200) {
+              this.$message.success('更新成功')
+              this.editDialogVisible = false
+              // 更新用户信息显示
+              this.getuserInfo()
+            } else {
+              this.$message.error(res.msg || '更新失败')
+            }
+          } catch (error) {
+            console.error('更新失败:', error)
+            this.$message.error('更新失败')
+          }
         } else {
-          return false;
+          return false
         }
-      });
-    }
+      })
+    },
+    handleAvatarSuccess() {
+      this.$message.success('头像上传成功')
+    },
   }
   
 

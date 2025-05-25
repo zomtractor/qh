@@ -8,7 +8,8 @@
     <select id="selectUserInfoByUserId" resultType="ResumeJob">
         SELECT name, gender, age, education, school, phone, email,
                avatar_file_id AS avatarFileId,
-               job_intention As jobIntention
+               job_intention As jobIntention,
+               attachment_file_ids AS attachmentFileIds
         FROM tb_resume
         WHERE user_id = #{userId}
     </select>
