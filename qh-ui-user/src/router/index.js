@@ -39,7 +39,7 @@ const routes = [
   },
   {
     path: '/communicate',
-    component: () => import('../components/Chatbox/index')
+    component: () => import('../views/jobseeker/message.vue')
   },
 ]
 

@@ -16,6 +16,7 @@ import com.qh.recruit.user.domain.Dto.PageDto;
 import com.qh.recruit.user.domain.Dto.UserJobDto;
 import com.qh.recruit.user.domain.ResumeJob;
 import com.qh.recruit.user.domain.UserJob;
+import com.qh.recruit.user.service.JobSeekerService;
 import com.qh.recruit.user.service.ResumeUserService;
 import com.qh.recruit.user.service.UserJobService;
 import org.apache.poi.ss.formula.functions.T;
@@ -40,6 +41,9 @@ public class JobSeekerController extends BaseController {
 
     @Resource
     private IResumeService resumeService;
+
+    @Resource
+    private JobSeekerService jobSeekerService;
 
     @GetMapping("/job/list")
     public TableDataInfo getJobList(UserJobDto job) {
@@ -141,5 +145,11 @@ public class JobSeekerController extends BaseController {
     {
         return success(interviewService.selectInterviewById(id));
     }
+
+    @PostMapping("/contact/{id}")
+    public AjaxResult contect(@PathVariable Long id){
+        return jobSeekerService.contact(id);
+    }
+
 
 }

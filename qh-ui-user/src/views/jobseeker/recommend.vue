@@ -60,8 +60,8 @@
           <div class="requirement-content">{{ item.userJob.requirement }}</div>
         </div>
         <div class="action-buttons">
-          <el-button type="primary" @click="communicate(item.userJob)">沟通</el-button>
-          <el-button type="success" @click="submitResume(item.userJob)">投递简历</el-button>
+          <el-button type="primary" @click="handleCommunicate(item.userJob.id)">沟通</el-button>
+          <el-button type="success" @click="handleSubmitResume(item.userJob.id)">投递简历</el-button>
         </div>
       </div>
     </div>
@@ -72,6 +72,7 @@
 import { getRecommendJobs, communicateWithRecruiter, submitResumeToJob } from '@/api/recommend/recommend'
 import { listCategory } from "@/api/etp/category";
 import { listTag } from "@/api/etp/tag";
+import {contact} from "@/api/jobseeker/communicate";
 
 export default {
   data() {
@@ -164,7 +165,7 @@ export default {
       await this.fetchJobs()
     },
     // 处理沟通请求
-    async communicate(job) {
+/*    async communicate(job) {
       try {
         await communicateWithRecruiter({jobId: job.id})
         this.$message.success('已发起沟通请求')
@@ -187,6 +188,31 @@ export default {
         this.$message.error('简历投递失败')
         console.error('简历投递失败:', error)
       }
+    }*/
+    handleCommunicate(id) {
+      contact(id).then(resp=>{
+        if(resp.code === 200) {
+          this.$message.success('沟通请求已发送');
+          // setTimeout(()=>{
+          //   this.$router.push({path: '/communicate'});
+          // },1000)
+        } else {
+          this.$message.error(resp.msg);
+        }
+      })
+    },
+    // 投递简历
+    handleSubmitResume(id) {
+      contact(id).then(resp=>{
+        if(resp.code === 200) {
+          this.$message.success('沟通请求已发送');
+          // setTimeout(()=>{
+          //   this.$router.push({path: '/communicate'});
+          // },1000)
+        } else {
+          this.$message.error(resp.msg);
+        }
+      })
     }
   },
   created() {

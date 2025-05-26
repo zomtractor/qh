@@ -20,3 +20,9 @@ export function postMsg(data) {
         data: data
     })
 }
+export function contact(id){
+    return request({
+        url: '/jobSeeker/contact/'+id,
+        method: 'post',
+    })
+}

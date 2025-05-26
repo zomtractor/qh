@@ -66,8 +66,8 @@
           <div class="requirement-content">{{ job.requirement }}</div>
         </div>
         <div class="actions">
-          <el-button type="primary" @click="handleCommunicate">沟通</el-button>
-          <el-button type="success" @click="handleSubmitResume">投递简历</el-button>
+          <el-button type="primary" @click="handleCommunicate(job.id)">沟通</el-button>
+          <el-button type="success" @click="handleSubmitResume(job.id)">投递简历</el-button>
         </div>
       </div>
     </div>
@@ -88,6 +88,7 @@ import { jobList, getJob } from '@/api/home/home'
 import { getCurrentUser } from "@/utils/local";
 import { listTag } from "@/api/etp/tag";
 import { listCategory } from "@/api/etp/category";
+import {contact} from "@/api/jobseeker/communicate";
 
 export default {
   name: 'Home',
@@ -165,14 +166,30 @@ export default {
       this.getJobList();
     },
     // 沟通
-    handleCommunicate() {
-      this.$router.push({path: '/communicate'});
-        // TODO:处理沟通结果
+    handleCommunicate(id) {
+      contact(id).then(resp=>{
+        if(resp.code === 200) {
+          this.$message.success('沟通请求已发送');
+          // setTimeout(()=>{
+          //   this.$router.push({path: '/communicate'});
+          // },1000)
+        } else {
+          this.$message.error(resp.msg);
+        }
+      })
     },
     // 投递简历
-    handleSubmitResume() {
-      this.$router.push({path: '/communicate'});
-        // TODO:处理投递简历结果
+    handleSubmitResume(id) {
+      contact(id).then(resp=>{
+        if(resp.code === 200) {
+          this.$message.success('沟通请求已发送');
+          // setTimeout(()=>{
+          //   this.$router.push({path: '/communicate'});
+          // },1000)
+        } else {
+          this.$message.error(resp.msg);
+        }
+      })
     }
   }
 }
