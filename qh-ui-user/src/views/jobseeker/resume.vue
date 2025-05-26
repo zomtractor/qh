@@ -6,7 +6,7 @@
       <div class="profile-section">
         <div class="profile-header">
           <div class="avatar">
-            <image-preview :src="userInfo.avatarFileId || default_img" alt="用户头像" width="100" height="100" />
+            <image-preview :src="userInfo.avatarFileId || default_img" alt="用户头像" :width="100" :height="100" />
             <!-- <img :src="userInfo.avatarFileId || default_img" alt="用户头像"> -->
           </div>
           <div class="info">
@@ -16,7 +16,7 @@
               <p>年龄：{{ userInfo.age }}</p>
               <p>性别：{{ userInfo.gender }}</p>
               <p>电话：{{ userInfo.phone }}</p>
-              <p>{{ userInfo.school }} </p>
+              <p>学校：{{ userInfo.school }} </p>
               <p>期望：{{ userInfo.jobIntention }} </p>
             </div>
           </div>
@@ -27,15 +27,16 @@
       <!-- 附件管理部分 -->
       <div class="attachment-section">
         <div class="section-header">
-          <h3>附件管理</h3>
           <file-upload
-            v-model="attachments"
+              style="width: 100%"
+            v-model="userInfo.attachmentFileIds"
             :file-type="['doc', 'docx', 'pdf']"
             :limit="5"
             :file-size="10"
-            @on-success="handleUploadSuccess"
+
           />
         </div>
+        <el-button type="primary" size="small" @click="handleFileSave">保存</el-button>
         <!-- 文件列表会由FileUpload组件自动处理和显示 -->
       </div>
     </div>
@@ -89,8 +90,8 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="totalPages"
-          :current-page.sync="currentPage"
+          :total="total"
+          :current-page.sync="jobQuery.pageNum"
           @current-change="handlePageChange">
         </el-pagination>
       </div>
@@ -127,11 +128,9 @@
       width="40%">
       <el-form :model="editForm" :rules="rules" ref="editForm" label-width="100px">
         <el-form-item label="头像" prop="avatar">
-
           <div class="avatar-uploader">
-            <image-preview :src="editForm.avatar || default_img" width="100" height="100" />
             <image-upload
-              v-model="editForm.avatar"
+              v-model="editForm.avatarFileId"
               :file-type="['jpg', 'jpeg', 'png']"
               :limit="1"
               :file-size="2"
@@ -217,10 +216,9 @@ export default {
         userId: getCurrentUser().id,
         email: '',
       },
-      attachments: [
-        
-      ],
-      activeTab: 'passed',
+      // attachments: [
+      //
+      // ],
       jobList: [
         {
           name: 'Python开发工程师',
@@ -243,7 +241,7 @@ export default {
       chatMessage: '',
       editDialogVisible: false,
       rules: {
-        avatar: [
+        avatarFileId: [
           { required: true, message: '请上传头像', trigger: 'change' }
         ],
         name: [
@@ -268,7 +266,13 @@ export default {
         phone: [
           { required: true, message: '请输入电话', trigger: 'blur' }
         ]
-      }
+      },
+      jobQuery: {
+        pageNum: 1,
+        pageSize: 10,
+        interviewStatus: 'passed'
+      },
+      total: 0,
     }
   },
   created() {
@@ -291,12 +295,6 @@ export default {
 
         const res = await getUserInfo(getCurrentUser().id)
         this.userInfo = res.data
-         this.attachments = res.data.attachmentFileIds
-          .split(',') // 按逗号分割
-          .map(url => url.trim()) // 去除前后空格
-          .filter(url => url.length > 0); 
-        // this.attachments = res.data.attachmentFileIds
-        console.log(this.attachments)
         
       } catch (error) {
         this.$message.error('失败')
@@ -320,15 +318,12 @@ export default {
     // },
 
     async getinterviewInfo() {
-      let interview = {
-          userId: getCurrentUser().id,
-          interviewStatus: this.activeTab
-      }
+      this.jobQuery.userId = getCurrentUser().id
+      this.jobQuery.interviewStatus = this.activeTab
       try {
-        
-        const res = await getInterviewInfo(interview)
-        console.log(res.data)
-        this.jobList = res.data
+        const res = await getInterviewInfo(this.jobQuery)
+        console.log(res.rows)
+        this.jobList = res.rows
         
       } catch (error) {
         this.$message.error('失败')
@@ -336,7 +331,7 @@ export default {
       }
     },
 
-    handleUploadSuccess(res, file) {
+/*    handleUploadSuccess(res, file) {
       // 上传成功后将文件添加到附件列表
       this.attachments.push({
         name: file.name,
@@ -348,7 +343,7 @@ export default {
           minute: '2-digit'
         }).replace(/\//g, '.')
       });
-    },
+    },*/
     beforeUpload(file) {
       // 上传前的文件验证
       const isPDF = file.type === 'application/pdf';
@@ -382,7 +377,7 @@ export default {
     handleEdit() {
       this.editForm = {
         ...this.editForm,
-        avatar: this.userInfo.avatar,
+        avatarFileId: this.userInfo.avatarFileId,
         name: this.userInfo.name,
         education: this.userInfo.education,
         age: this.userInfo.age,
@@ -417,9 +412,27 @@ export default {
         }
       })
     },
+    handleFileSave(){
+      console.log(this.userInfo)
+        updateUserInfo(this.userInfo).then(res=>{
+          if (res.code === 200) {
+            this.$message.success('更新成功')
+            this.editDialogVisible = false
+            this.getuserInfo()
+          } else {
+            this.$message.error(res.msg || '更新失败')
+          }
+        }).catch(e=>{
+          console.error('更新失败:', e)
+          this.$message.error('更新失败')
+        })
+    },
     handleAvatarSuccess() {
       this.$message.success('头像上传成功')
     },
+    handlePageChange(){
+      this.getinterviewInfo()
+    }
   }
   
 
@@ -688,8 +701,6 @@ export default {
   text-align: center;
   margin-top: 20px;
 }
-</style>
-
 
 .avatar-uploader {
   display: flex;

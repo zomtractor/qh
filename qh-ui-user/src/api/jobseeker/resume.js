@@ -39,6 +39,6 @@ export function getInterviewInfo(data) {
     return request({
         url: '/jobSeeker/getInterviewInfo',
         method: 'post',
-        data: data
+        params: data
     })
 }

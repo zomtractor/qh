@@ -6,7 +6,7 @@
 <mapper namespace="com.qh.recruit.user.mapper.ResumeUserMapper">
 
     <select id="selectUserInfoByUserId" resultType="ResumeJob">
-        SELECT name, gender, age, education, school, phone, email,
+        SELECT id, user_id as userId, name, gender, age, education, school, phone, email,
                avatar_file_id AS avatarFileId,
                job_intention As jobIntention,
                attachment_file_ids AS attachmentFileIds
@@ -17,7 +17,7 @@
     <update id="updateResumeInfo">
         UPDATE tb_resume
         SET name = #{name},gender = #{gender},age = #{age},education = #{education},school = #{school},job_intention = #{jobIntention},phone = #{phone},email = #{email}
-        WHERE user_id = #{userId}
+        WHERE id = #{id}
     </update>
 
 

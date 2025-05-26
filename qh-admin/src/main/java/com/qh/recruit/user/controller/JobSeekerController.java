@@ -3,9 +3,11 @@ package com.qh.recruit.user.controller;
 import com.qh.recruit.admin.domain.Etp;
 import com.qh.recruit.admin.domain.Interview;
 import com.qh.recruit.admin.domain.Job;
+import com.qh.recruit.admin.domain.Resume;
 import com.qh.recruit.admin.domain.dto.InterviewDto;
 import com.qh.recruit.admin.service.IInterviewService;
 import com.qh.recruit.admin.service.IJobService;
+import com.qh.recruit.admin.service.IResumeService;
 import com.qh.recruit.admin.service.IUserService;
 import com.qh.recruit.common.core.controller.BaseController;
 import com.qh.recruit.common.core.domain.AjaxResult;
@@ -35,6 +37,9 @@ public class JobSeekerController extends BaseController {
     private IInterviewService interviewService;
     @Autowired
     ResumeUserService resumeuserService;
+
+    @Resource
+    private IResumeService resumeService;
 
     @GetMapping("/job/list")
     public TableDataInfo getJobList(UserJobDto job) {
@@ -86,7 +91,8 @@ public class JobSeekerController extends BaseController {
 
     @PostMapping("/get_info")
     public AjaxResult getUserInfo(@RequestParam("user_id")Long userId) {
-        return resumeuserService.getUserInfoByUserId(userId);
+//        return resumeuserService.getUserInfoByUserId(userId);
+        return success(resumeService.selectResumeById(userId));
     }
 
 
@@ -96,15 +102,17 @@ public class JobSeekerController extends BaseController {
     }
 
     @PostMapping("/updateUserInfo")
-    public AjaxResult updateUserInfo(@RequestBody ResumeJob userInfo) {
-        return resumeuserService.updateResumeInfo(userInfo);
+    public AjaxResult updateUserInfo(@RequestBody Resume resume) {
+//        return resumeuserService.updateResumeInfo(userInfo);
+        return toAjax(resumeService.updateResume(resume));
     }
 
     @PostMapping("/getInterviewInfo")
-    public AjaxResult getInterviewInfo(@RequestBody Interview interview) {
+    public TableDataInfo getInterviewInfo(Interview interview) {
 //        return resumeuserService.updateResumeInfo(userInfo);
-        return resumeuserService.getInterviewInfo(interview);
-//        return null;
+        startPage();
+        List<InterviewDto> interviewInfo = resumeuserService.getInterviewInfo(interview);
+        return getDataTable(interviewInfo);
     }
 
 

@@ -49,7 +49,7 @@ public class ResumeUserServiceImpl implements ResumeUserService {
     }
 
     @Override
-    public AjaxResult getInterviewInfo(Interview i) {
+    public List<InterviewDto> getInterviewInfo(Interview i) {
         List<Interview> interviews = resumeMapper.selectInterviewInfoByUserIdAndStatus(i);
         List<Long> jobIds = interviews.stream().map(Interview::getJobId).collect(Collectors.toList());
         List<Long> etpIds = interviews.stream().map(Interview::getEtpId).collect(Collectors.toList());
@@ -106,7 +106,7 @@ public class ResumeUserServiceImpl implements ResumeUserService {
 
 
         int debug = 1;
-        return AjaxResult.success(mergedList);
+        return mergedList;
     }
 
 
