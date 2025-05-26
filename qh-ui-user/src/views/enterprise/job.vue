@@ -70,7 +70,7 @@
       <el-table-column label="薪资描述" align="center" prop="salaryDesc" />
       <el-table-column label="工作地点" align="center" prop="location" />
       <el-table-column label="要求条件" align="center" prop="requirement" />
-      <el-table-column label="企业名称" align="center" prop="etpId" />
+      <el-table-column label="企业名称" align="center" prop="etpName" />
       <el-table-column label="分类" align="center" prop="categoryIds" >
         <template slot-scope="scope">
           <el-tag v-for="tag in scope.row.categoryList" :key="tag" size="small" effect="dark" type="" style="margin: 2px">
@@ -200,7 +200,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        etpId: getCurrentUser().id,
+        etpId: getCurrentUser().refId,
         description: null,
         categoryIds: null,
         tagIds: null,

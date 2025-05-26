@@ -2,7 +2,7 @@ import request from "@/utils/request";
 
 export function loadMyCompany(id) {
     return request({
-        url: '/etp/'+id,
+        url: '/etp/my/'+id,
         method: 'get',
     })
 }

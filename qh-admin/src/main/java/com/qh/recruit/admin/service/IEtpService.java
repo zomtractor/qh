@@ -58,4 +58,6 @@ public interface IEtpService
      * @return 结果
      */
     public int deleteEtpById(Long id);
+
+    Etp selectEtpByUserId(Long id);
 }

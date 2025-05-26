@@ -93,4 +93,9 @@ public class EtpServiceImpl implements IEtpService
     {
         return etpMapper.deleteEtpById(id);
     }
+
+    @Override
+    public Etp selectEtpByUserId(Long id) {
+        return etpMapper.selectEtpByUserId(id);
+    }
 }
