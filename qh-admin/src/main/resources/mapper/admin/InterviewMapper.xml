@@ -53,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectInterviewDtoVo"/>
         <where>
              a.job_id = b.id and a.etp_id = c.id and a.user_id = d.id and a.user_id = e.user_id
+            <if test="userId != null "> and a.etp_id in(select id from tb_etp where user_id = #{userId})</if>
             <if test="userName != null  and userName != ''"> and d.username like concat('%', #{userName}, '%')</if>
             <if test="jobName != null  and jobName != ''"> and b.name like concat('%', #{jobName}, '%')</if>
         </where>

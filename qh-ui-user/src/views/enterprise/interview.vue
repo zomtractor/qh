@@ -195,6 +195,7 @@ export default {
 
       // 查询参数
       queryParams: {
+        userId: undefined,
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
@@ -237,6 +238,7 @@ export default {
   created() {
     let that = this
     that.userInfo = JSON.parse(localStorage.getItem("currentUser"));
+    that.queryParams.userId = that.userInfo.id 
     joblist().then(res => {
       that.jobList = res.rows
     })
