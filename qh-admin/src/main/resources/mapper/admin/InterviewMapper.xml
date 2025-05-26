@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="jobId"    column="job_id"    />
         <result property="etpId"    column="etp_id"    />
         <result property="interviewStatus"    column="interview_status"    />
-        <result property="message"    column="message"    />
+        <result property="message"    column="message"  jdbcType="VARCHAR"   />
         <result property="time"    column="time"    />
         <result property="jobName"    column="job_name"    />
         <result property="userName"    column="user_name"    />

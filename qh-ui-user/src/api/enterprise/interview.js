@@ -12,7 +12,7 @@ export function listInterview(query) {
   // 查询面试详细
   export function getInterview(interviewId) {
     return request({
-      url: '/system/interview/' + interviewId,
+      url: '/jobSeeker/interview/' + interviewId,
       method: 'get'
     })
   }

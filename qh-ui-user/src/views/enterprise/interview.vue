@@ -47,7 +47,7 @@
           <el-table-column label="学历" align="center" key="education" prop="education" v-if="columns[4].visible"
             width="120" />
           <el-table-column label="具体信息" align="center" width="160" class-name="small-padding fixed-width">
-            <template slot-scope="scope" v-if="scope.row.jobId !== 1">
+            <template slot-scope="scope" >
               <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 
             </template>
@@ -152,7 +152,6 @@ export default {
   data() {
     return {
       interviewList: [],
-      userList: [],
       jobList: [],
       etpList: [],
       // 遮罩层

@@ -12,6 +12,35 @@ public class InterviewDto extends Interview {
     //学历
     private String education;
 
+    private String message;
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public InterviewDto() {
+    }
+
+    public InterviewDto(String jobSalary, String education, String message, String userName, String jobName, String etpName, String logo, String description, String salaryDesc, String location, String requirement) {
+        this.jobSalary = jobSalary;
+        this.education = education;
+        this.message = message;
+        this.userName = userName;
+        this.jobName = jobName;
+        this.etpName = etpName;
+        this.logo = logo;
+        this.description = description;
+        this.salaryDesc = salaryDesc;
+        this.location = location;
+        this.requirement = requirement;
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getJobSalary() {
         return jobSalary;
     }

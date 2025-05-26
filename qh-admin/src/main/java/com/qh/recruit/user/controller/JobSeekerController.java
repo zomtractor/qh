@@ -135,4 +135,11 @@ public class JobSeekerController extends BaseController {
     {
         return toAjax(interviewService.updateInterview(interview));
     }
+
+    @GetMapping(value = "/interview/{id}")
+    public AjaxResult getInterviewInfo(@PathVariable("id") Long id)
+    {
+        return success(interviewService.selectInterviewById(id));
+    }
+
 }
