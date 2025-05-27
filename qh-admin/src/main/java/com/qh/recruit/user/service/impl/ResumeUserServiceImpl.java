@@ -50,7 +50,7 @@ public class ResumeUserServiceImpl implements ResumeUserService {
 
     @Override
     public List<InterviewDto> getInterviewInfo(Interview i) {
-        if("已投递".equals(i.getInterviewStatus())) i.setInterviewStatus("");
+        if("已投递".equals(i.getInterviewStatus())) i.setInterviewStatus(null);
         List<Interview> interviews = resumeMapper.selectInterviewInfoByUserIdAndStatus(i);
         List<Long> jobIds = interviews.stream().map(Interview::getJobId).collect(Collectors.toList());
         List<Long> etpIds = interviews.stream().map(Interview::getEtpId).collect(Collectors.toList());

@@ -47,8 +47,8 @@
         <el-tabs v-model="activeTab"  @tab-click="handleTabClick">
           <el-tab-pane label="已投递" name="已投递"  value=""></el-tab-pane>
           <el-tab-pane label="待面试" name="待面试" value="待面试"></el-tab-pane>
-          <el-tab-pane label="通过" name="通过" value="通过"></el-tab-pane>
-          <el-tab-pane label="未通过" name="未通过" value="未通过"></el-tab-pane>
+          <el-tab-pane label="已通过" name="通过" value="通过"></el-tab-pane>
+          <el-tab-pane label="未通过" name="不通过" value="不通过"></el-tab-pane>
         </el-tabs>
       </div>
       

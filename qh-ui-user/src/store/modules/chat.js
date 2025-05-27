@@ -29,7 +29,7 @@ const actions = {
     connect({commit, state, dispatch}) {
         if (state.socket) return;
 
-        const socket = new WebSocket(`ws://localhost:8080/ws-chat?token=${getToken()}`);
+        const socket = new WebSocket(`ws://${location.host}:8080/ws-chat?token=${getToken()}`);
         commit('SET_USER_ID', getCurrentUser().id);
         commit('SET_SOCKET', socket);
 

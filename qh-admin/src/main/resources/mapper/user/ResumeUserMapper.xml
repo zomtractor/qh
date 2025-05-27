@@ -27,7 +27,7 @@
         <where>
             user_id = #{userId}
             <if test="interviewStatus != null">
-                AND interview_status like concat('%', #{interviewStatus} ,'%')
+                AND interview_status = #{interviewStatus}
             </if>
         </where>
     </select>
