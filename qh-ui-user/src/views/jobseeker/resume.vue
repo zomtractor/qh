@@ -380,6 +380,7 @@ export default {
         jobIntention: this.userInfo.jobIntention,
         phone: this.userInfo.phone,
         userId: getCurrentUser().id,
+        id: getCurrentUser().refId,
         email: this.userInfo.email,
         gender: this.userInfo.gender
       }

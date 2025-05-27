@@ -95,8 +95,8 @@ public class JobSeekerController extends BaseController {
 
     @PostMapping("/get_info")
     public AjaxResult getUserInfo(@RequestParam("user_id")Long userId) {
-//        return resumeuserService.getUserInfoByUserId(userId);
-        return success(resumeService.selectResumeById(userId));
+        return resumeuserService.getUserInfoByUserId(userId);
+//        return success(resumeService.selectResumeById(userId));
     }
 
 
