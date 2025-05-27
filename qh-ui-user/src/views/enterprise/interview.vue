@@ -146,6 +146,7 @@
 import { listInterview, getInterview, delInterview, addInterview, updateInterview, changeInterviewStatus, joblist, etplist, userlist } from "@/api/enterprise/interview";
 import { getToken } from "@/utils/auth";
 import {listContact} from "@/api/jobseeker/communicate";
+import {getCurrentUser} from "@/utils/local";
 
 
 export default {
@@ -240,7 +241,9 @@ export default {
     let that = this
     that.userInfo = JSON.parse(localStorage.getItem("currentUser"));
     that.queryParams.userId = that.userInfo.id 
-    joblist().then(res => {
+    joblist({
+      etpId: getCurrentUser().refId
+    }).then(res => {
       that.jobList = res.rows
     })
     etplist({userId:that.userInfo.id}).then(res => {
