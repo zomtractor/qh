@@ -145,6 +145,7 @@
 <script>
 import { listInterview, getInterview, delInterview, addInterview, updateInterview, changeInterviewStatus, joblist, etplist, userlist } from "@/api/enterprise/interview";
 import { getToken } from "@/utils/auth";
+import {listContact} from "@/api/jobseeker/communicate";
 
 
 export default {
@@ -245,7 +246,7 @@ export default {
     etplist({userId:that.userInfo.id}).then(res => {
       that.etpList = res.rows
     })
-    userlist().then(res => {
+    listContact().then(res => {
       that.userList = res.rows
     })
     this.getList();

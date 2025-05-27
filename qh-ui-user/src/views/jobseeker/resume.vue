@@ -45,10 +45,10 @@
     <div class="job-list">
       <div class="filter-tabs">
         <el-tabs v-model="activeTab"  @tab-click="handleTabClick">
-          <el-tab-pane label="已通过" name="passed" value="已通过"></el-tab-pane>
-          <el-tab-pane label="已投递" name="delivered" value="已投递"></el-tab-pane>
-          <el-tab-pane label="感兴趣" name="interested" value="感兴趣"></el-tab-pane>
-          <el-tab-pane label="面试" name="interview" value="面试"></el-tab-pane>
+          <el-tab-pane label="已投递" name="已投递"  value=""></el-tab-pane>
+          <el-tab-pane label="待面试" name="待面试" value="待面试"></el-tab-pane>
+          <el-tab-pane label="已通过" name="已通过" value="已通过"></el-tab-pane>
+          <el-tab-pane label="未通过" name="未通过" value="未通过"></el-tab-pane>
         </el-tabs>
       </div>
       
@@ -67,19 +67,14 @@
             </div>
           </div>
           <div class="company-info">
-            <image-preview :src="job.logo || default_img" alt="用户头像" width="100" height="100" />
+            <image-preview :src="job.logo || default_img" alt="用户头像" :width="100" :height="100" />
             <!-- <img :src="job.logo || default_img" alt="公司logo"> -->
-            <div class="company-meta">
-              <!-- <span>{{ job.companyName }}</span> -->
-              <!-- <span>人数：{{ job.employeeCount }}+</span> -->
-              <span>{{ job.etpName }}</span>
-              <span>人数：999+</span>
-            </div>
+
           </div>
 
-          <div class="goutong">
-            <el-button type="success" size="small" @click="handleChat(job)">继续沟通</el-button>
-          </div>
+<!--          <div class="goutong">-->
+<!--            <el-button type="success" size="small" @click="handleChat(job)">继续沟通</el-button>-->
+<!--          </div>-->
           
         </div>
         
@@ -189,7 +184,7 @@ export default {
     return {
       default_img: require('@/assets/default-avatar.jpg'),
 
-      activeTab: '已通过',
+      activeTab: '已投递',
       userInfo: {
         id:1,
         avatar: '',

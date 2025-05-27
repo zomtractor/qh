@@ -50,15 +50,16 @@ public class ResumeUserServiceImpl implements ResumeUserService {
 
     @Override
     public List<InterviewDto> getInterviewInfo(Interview i) {
+        if("已投递".equals(i.getInterviewStatus())) i.setInterviewStatus("");
         List<Interview> interviews = resumeMapper.selectInterviewInfoByUserIdAndStatus(i);
         List<Long> jobIds = interviews.stream().map(Interview::getJobId).collect(Collectors.toList());
         List<Long> etpIds = interviews.stream().map(Interview::getEtpId).collect(Collectors.toList());
-        
-        
+
+
         List<Job> jobs = resumeMapper.selectJobInfoByJobId(jobIds);
         List<Etp> etps = resumeMapper.selectEtpInfoByEtpId(etpIds);
-        
-        
+
+
         Map<Long, Job> jobMap = jobs.stream()
                 .collect(Collectors.toMap(
                         Job::getId,           // 假设 Job 有 getJobId() 方法
@@ -77,6 +78,7 @@ public class ResumeUserServiceImpl implements ResumeUserService {
         List<InterviewDto> mergedList = interviews.stream()
                 .map(interview -> {
                     Job job = jobMap.get(interview.getJobId());
+                    Etp etp = etpMap.get(interview.getEtpId());
                     if (job != null) {
                         return new InterviewDto(
                                 interview.getId(),
@@ -86,8 +88,8 @@ public class ResumeUserServiceImpl implements ResumeUserService {
                                 job.getSalaryDesc(),
                                 job.getEtpId(),      // 假设 Job 有 getEtpId()
                                 job.getName(),   // 假设 Job 有 getEtpId()
-                                null,
-                                null
+                                etp.getLogoFileId(),
+                                etp.getName()
                         );
                     } else {
                         return null; // 无匹配 Job 的 Interview，按需处理

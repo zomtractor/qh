@@ -24,7 +24,12 @@
     <select id="selectInterviewInfoByUserIdAndStatus" resultType="Interview">
         SELECT job_id AS jobId,etp_id AS etpId,message
         FROM tb_interview
-        WHERE user_id = #{userId} AND interview_status = #{interviewStatus}
+        <where>
+            user_id = #{userId}
+            <if test="interviewStatus != null">
+                AND interview_status like concat('%', #{interviewStatus} ,'%')
+            </if>
+        </where>
     </select>
 
 

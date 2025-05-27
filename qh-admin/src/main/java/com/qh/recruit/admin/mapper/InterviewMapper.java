@@ -61,5 +61,4 @@ public interface InterviewMapper
      */
     public int deleteInterviewByIds(Long[] ids);
 
-    public int matchCount(Long jobId, String jobIntention);
 }

@@ -322,7 +322,7 @@ export default {
         if (valid) {
           this.form.categoryIds = this.form.categoryList.join(",");
           this.form.tagIds = this.form.tagList.join(",");
-          this.form.etpId = getCurrentUser().id;
+          this.form.etpId = getCurrentUser().refId;
           if (this.form.id != null) {
             updateJob(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
