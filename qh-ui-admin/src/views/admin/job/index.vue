@@ -76,7 +76,7 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="岗位名称" align="center" prop="name" />
       <el-table-column label="岗位职责" align="center" prop="description" />
-      <el-table-column label="todo" align="center" prop="salaryDesc" />
+      <el-table-column label="薪资" align="center" prop="salaryDesc" />
       <el-table-column label="工作地点" align="center" prop="location" />
       <el-table-column label="要求条件" align="center" prop="requirement" />
       <el-table-column label="企业名称" align="center" prop="etpId" />

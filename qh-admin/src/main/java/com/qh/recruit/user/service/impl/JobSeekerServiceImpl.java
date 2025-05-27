@@ -30,7 +30,7 @@ public class JobSeekerServiceImpl implements JobSeekerService {
         if (job == null) {
             return AjaxResult.error("Job not found");
         }
-        Etp etp = etpMapper.selectEtpByUserId(job.getEtpId());
+        Etp etp = etpMapper.selectEtpById(job.getEtpId());
         if(etp == null) {
             return AjaxResult.error("Company not found");
         }
