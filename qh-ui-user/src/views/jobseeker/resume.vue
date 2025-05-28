@@ -14,7 +14,6 @@
             <div class="basic-info">
               <p>学历：{{ userInfo.education }}</p>
               <p>年龄：{{ userInfo.age }}</p>
-              <p>性别：{{ userInfo.gender }}</p>
               <p>电话：{{ userInfo.phone }}</p>
               <p>学校：{{ userInfo.school }} </p>
               <p>期望：{{ userInfo.jobIntention }} </p>

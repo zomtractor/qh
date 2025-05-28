@@ -8,7 +8,7 @@
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef">
         <div class="form-header">
             <span class="login-mode-switch" @click="switchLoginMode">
-              <a href="email">邮箱登录</a>
+              <a href="../email">邮箱登录</a>
             </span>
         </div>
         <el-form-item prop="username">
